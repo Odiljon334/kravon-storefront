@@ -599,6 +599,41 @@ button {
   transform: translateY(0);
 }
 
+.empty-state-box {
+  grid-column: 1 / -1;
+  padding: 80px 24px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  margin: 32px 0;
+}
+
+.empty-state-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.empty-state-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.empty-state-sub {
+  font-size: 13px;
+  color: var(--text-sub);
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
 @media (max-width: 768px) {
   .nav-inner {
     flex-wrap: wrap;

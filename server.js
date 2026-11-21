@@ -21,192 +21,10 @@ let cjTokenCache = {
 };
 
 const FULFILLMENT_ORDERS = [];
+let MOCK_PRODUCTS = [];
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
-
-const MOCK_PRODUCTS = [
-  {
-    id: "prod_1",
-    shopifyId: "gid://shopify/Product/800101",
-    sku: "KR-ANM-01",
-    cjPid: "1525003850078498816",
-    title: "Zero-G Ferrofluid Monolith",
-    handle: "zero-g-ferrofluid-monolith",
-    category: "Anomalies",
-    price: 340.00,
-    currency: "USD",
-    rating: 4.9,
-    reviewsCount: 184,
-    stockCount: 6,
-    availableForSale: true,
-    tagline: "Suspended magnetic fluid monolith reacting to ambient electromagnetic fields.",
-    description: "Hermetically sealed optical chamber housing nanoscale ferromagnetic particles in non-polar suspension. Interacts organically with integrated neodymium magnetic dials and ambient electromagnetic radiation.",
-    materials: "Borosilicate Glass, Aerospace 6061 Billet, Hydrocarbon Ferrofluid",
-    weight: "3.2 lbs",
-    dimensions: "8.4 × 3.2 in Cylinder",
-    origin: "Zurich Physics Atelier",
-    images: [
-      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
-    ],
-    variants: [
-      { id: "var_1_obsidian", cjVid: "1525003850212716544", title: "Obsidian Core", hex: "#111215", price: 340.00, inStock: true, imageIndex: 0 },
-      { id: "var_1_titanium", cjVid: "1525003850212716545", title: "Raw Titanium", hex: "#7a7974", price: 375.00, inStock: true, imageIndex: 1 }
-    ],
-    tags: ["Ferrofluid", "Anomaly", "Electromagnetic", "Titanium"]
-  },
-  {
-    id: "prod_2",
-    shopifyId: "gid://shopify/Product/800102",
-    sku: "KR-ART-02",
-    cjPid: "2611210810141626200",
-    title: "Synthetic Aerogel Matrix Vault",
-    handle: "synthetic-aerogel-matrix-vault",
-    category: "Artifacts",
-    price: 280.00,
-    currency: "USD",
-    rating: 4.9,
-    reviewsCount: 112,
-    stockCount: 4,
-    availableForSale: true,
-    tagline: "99.8% air silica aerogel matrix encased in an airtight sapphire vault.",
-    description: "Ultra-low-density mesoporous silica matrix known as frozen smoke. Scatters ambient Rayleigh wavelengths identically to the upper stratosphere. Encased in a vacuum-sealed grade 5 titanium monocoque.",
-    materials: "Grade 5 Titanium, Anti-reflective Sapphire Crystal, Silica Aerogel",
-    weight: "5.4 oz",
-    dimensions: "2.5 × 2.5 × 2.5 in",
-    origin: "Tsukuba Materials Institute",
-    images: [
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80"
-    ],
-    variants: [
-      { id: "var_2_raw", cjVid: "2611210810141627400", title: "Bead-Blasted Ti", hex: "#8c8b86", price: 280.00, inStock: true, imageIndex: 0 },
-      { id: "var_2_dlc", cjVid: "2611210810141627400", title: "DLC Basalt", hex: "#16171a", price: 315.00, inStock: true, imageIndex: 1 }
-    ],
-    tags: ["Aerogel", "Grade 5 Titanium", "Sapphire", "Titanium"]
-  },
-  {
-    id: "prod_3",
-    shopifyId: "gid://shopify/Product/800103",
-    sku: "KR-INS-03",
-    cjPid: "2118959003672195073",
-    title: "Obelisk Harmonic Synth Sculpture",
-    handle: "obelisk-harmonic-synth-sculpture",
-    category: "Instruments",
-    price: 520.00,
-    currency: "USD",
-    rating: 5.0,
-    reviewsCount: 79,
-    stockCount: 3,
-    availableForSale: true,
-    tagline: "Monolithic cast-iron drone synthesizer tuned to sub-harmonic frequencies.",
-    description: "Screen-less analog sound monument generating continuous binaural drones and microtonal oscillations via solid bronze touch sensors. Built with discrete transistors and warm voltage filters.",
-    materials: "Cast Iron Monolith, Phosphor Bronze Plates, Analog Voltage Core",
-    weight: "6.8 lbs",
-    dimensions: "14.2 × 4.0 × 3.5 in",
-    origin: "Stockholm Sound Atelier",
-    images: [
-      "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=800&q=80"
-    ],
-    variants: [
-      { id: "var_3_iron", cjVid: "2118959003743498242", title: "Cast Iron", hex: "#1f2024", price: 520.00, inStock: true, imageIndex: 0 },
-      { id: "var_3_bronze", cjVid: "2118959003743498242", title: "Aged Bronze", hex: "#5a4529", price: 580.00, inStock: true, imageIndex: 1 }
-    ],
-    tags: ["Analog Synth", "Drone Instrument", "Bronze", "Monolith"]
-  },
-  {
-    id: "prod_4",
-    shopifyId: "gid://shopify/Product/800104",
-    sku: "KR-ART-04",
-    cjPid: "2611210810141626200",
-    title: "Sub-Zero Bismuth Hopper Ingot",
-    handle: "sub-zero-bismuth-hopper-ingot",
-    category: "Artifacts",
-    price: 190.00,
-    currency: "USD",
-    rating: 4.8,
-    reviewsCount: 96,
-    stockCount: 8,
-    availableForSale: true,
-    tagline: "Lab-crystallized staircase elemental hopper crystal with iridescent oxide film.",
-    description: "High-purity 99.99% crystalline bismuth grown via thermal fractioning. Naturally forms stepped pyramidal hopper crystals displaying spectral rainbow interference colors caused by nanoscale oxidation gradients.",
-    materials: "99.999% Elemental Bismuth, Solid Hardwood Display Pedestal",
-    weight: "2.1 lbs",
-    dimensions: "3.8 × 3.8 × 3.2 in",
-    origin: "Reykjavik Crystallography Lab",
-    images: [
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80"
-    ],
-    variants: [
-      { id: "var_4_spectral", cjVid: "2611210810141627400", title: "Spectral Prism", hex: "#7852ff", price: 190.00, inStock: true, imageIndex: 0 },
-      { id: "var_4_amber", cjVid: "2611210810141627400", title: "Solar Gold", hex: "#d4a34b", price: 210.00, inStock: true, imageIndex: 1 }
-    ],
-    tags: ["Bismuth", "Crystal", "Hopper Structure", "Iridescent"]
-  },
-  {
-    id: "prod_5",
-    shopifyId: "gid://shopify/Product/800105",
-    sku: "KR-INS-05",
-    cjPid: "2118959003672195073",
-    title: "Quantum Gyroscope Kinetic Pendulum",
-    handle: "quantum-gyroscope-kinetic-pendulum",
-    category: "Instruments",
-    price: 440.00,
-    currency: "USD",
-    rating: 4.9,
-    reviewsCount: 65,
-    stockCount: 2,
-    availableForSale: true,
-    tagline: "Gimbaled perpetual desk equilibrium instrument with frictionless ceramic races.",
-    description: "Triple-axis gimbal mechanism machined from solid brass and stainless steel. Spins on hybrid silicon nitride ceramic ball bearings to demonstrate inertial precession and angular momentum.",
-    materials: "Solid C360 Brass, 316L Stainless Steel, Si3N4 Ceramic Bearings",
-    weight: "4.5 lbs",
-    dimensions: "7.0 × 7.0 × 9.5 in",
-    origin: "Geneva Horology Studio",
-    images: [
-      "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80"
-    ],
-    variants: [
-      { id: "var_5_brass", cjVid: "2118959003743498242", title: "Brushed Brass", hex: "#c99a4e", price: 440.00, inStock: true, imageIndex: 0 },
-      { id: "var_5_stealth", cjVid: "2118959003743498242", title: "Matte Black", hex: "#1a1a1c", price: 475.00, inStock: true, imageIndex: 1 }
-    ],
-    tags: ["Gyroscope", "Kinetic", "Perpetual Motion", "Physics Instrument"]
-  },
-  {
-    id: "prod_6",
-    shopifyId: "gid://shopify/Product/800106",
-    sku: "KR-ART-06",
-    cjPid: "2611211008071623100",
-    title: "Titanium EDC Capsule & Pen Vessel",
-    handle: "titanium-edc-capsule-pen-vessel",
-    category: "Artifacts",
-    price: 145.00,
-    currency: "USD",
-    rating: 4.8,
-    reviewsCount: 142,
-    stockCount: 15,
-    availableForSale: true,
-    tagline: "Micro-machined grade 5 titanium pressure vessel with pressurized gas refill.",
-    description: "Waterproof airtight EDC artifact machined from a solid billet of aerospace Ti-6Al-4V. Contains an internal neodymium sealed chamber and Schmidt pressurized nitrogen ink cartridge capable of writing in zero gravity.",
-    materials: "Grade 5 Titanium (Ti-6Al-4V), Viton O-Rings, Nitrogen Gas Cartridge",
-    weight: "2.8 oz",
-    dimensions: "5.1 × 0.45 in",
-    origin: "Kobe Precision Tooling",
-    images: [
-      "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1585336261026-77890b05b630?auto=format&fit=crop&w=800&q=80"
-    ],
-    variants: [
-      { id: "var_6_stonewash", cjVid: "2611211008071624200", title: "Stonewashed Gray", hex: "#747577", price: 145.00, inStock: true, imageIndex: 0 },
-      { id: "var_6_anodized", cjVid: "2611211008071624200", title: "Flame Anodized", hex: "#3b4878", price: 165.00, inStock: true, imageIndex: 1 }
-    ],
-    tags: ["Titanium", "EDC", "Pressure Vessel", "Tactile Instrument"]
-  }
-];
 
 async function getCJAccessToken() {
   if (cjTokenCache.token && Date.now() < cjTokenCache.expiresAt) {
@@ -336,9 +154,10 @@ app.get("/api/health", (req, res) => {
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     storefront: "KRAVON Avant-Garde Atelier",
-    version: "2.4.0",
+    version: "2.5.0",
     fulfillmentEngine: "CJ_DROPSHIPPING_OPEN_API",
     cjStatus: cjTokenCache.token ? "ACTIVE" : "STANDBY",
+    productsCount: MOCK_PRODUCTS.length,
     shopifyMode: (SHOPIFY_STORE_DOMAIN && SHOPIFY_STOREFRONT_ACCESS_TOKEN) ? "LIVE_STOREFRONT" : "AUTONOMOUS_HEADLESS"
   });
 });
@@ -485,6 +304,21 @@ app.get("/api/products", async (req, res) => {
   });
 });
 
+app.post("/api/products", (req, res) => {
+  const newProduct = req.body;
+  if (!newProduct || !newProduct.title) {
+    return res.status(400).json({ success: false, message: "Invalid product data" });
+  }
+  newProduct.id = newProduct.id || `prod_${Date.now()}`;
+  MOCK_PRODUCTS.push(newProduct);
+  res.json({ success: true, count: MOCK_PRODUCTS.length, product: newProduct });
+});
+
+app.delete("/api/products", (req, res) => {
+  MOCK_PRODUCTS = [];
+  res.json({ success: true, count: 0, message: "All products deleted" });
+});
+
 app.get("/api/products/:id", (req, res) => {
   const { id } = req.params;
   const product = MOCK_PRODUCTS.find(p => p.id === id || p.handle === id || p.shopifyId === id || p.sku === id);
@@ -519,7 +353,7 @@ app.post("/api/checkout", async (req, res) => {
     const matchedVariant = matched?.variants?.find(v => v.id === item.variantId) || matched?.variants?.[0];
     return {
       id: item.id,
-      title: item.title || matched?.title,
+      title: item.title || matched?.title || "Artifact Object",
       cjVid: matchedVariant?.cjVid || "1525003850212716544",
       quantity: item.quantity || 1,
       price: item.price

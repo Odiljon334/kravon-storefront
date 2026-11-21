@@ -124,7 +124,11 @@ function renderCatalog() {
   }
 
   if (filtered.length === 0) {
-    container.innerHTML = `<div style="grid-column: 1 / -1; padding: 48px; text-align: center; color: var(--text-sub);">No artifacts in this classification.</div>`;
+    container.innerHTML = `<div class="empty-state-box">
+      <div class="empty-state-tag">ARCHIVE // STATUS 00</div>
+      <h3 class="empty-state-title">ARXIVDA HECH QANDAY BUYUM QOLMADI</h3>
+      <p class="empty-state-sub">Barcha artefaktlar va buyumlar katalogdan to'liq o'chirildi. Yangi eksklyuziv ob'ektlar kiritilishi kutilmoqda.</p>
+    </div>`;
     return;
   }
 
