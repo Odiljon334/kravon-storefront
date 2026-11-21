@@ -1,13 +1,7 @@
-# TODO Plan: $0 Bootstrapper Deployment & Live Setup
+# TODO Plan: CJ Dropshipping Auto-Fulfillment Integration
 
-- [ ] 1. Loyihani Vercel va Git deploymentga tayyorlash:
-  - `.gitignore` yaratish (`node_modules`, `.env`)
-  - `vercel.json` konfiguratsiyasini yaratish (Express serverless routing)
-  - Git repository initsializatsiya qilish va commit qilish
-- [ ] 2. Saytni darhol global internetga chiqarish (Instant Live Public HTTPS URL):
-  - Cloudflare Tunnel yoki Vercel CLI orqali to'g'ridan-to'g'ri dunyo ko'radigan jonli link olish
-  - Telefonda yoki istalgan brauzerda ochilishini tekshirish
-- [ ] 3. Bepul Shopify Partner Development Store yo'riqnomasi va Storefront API integratsiyasi:
-  - 1 tiyin to'lamasdan doimiy tekin Shopify Partner do'kon ochish
-  - Storefront API kalitlarini olish va `.env` ga ulash
-- [ ] 4. Haqiqiy surreal dropshipping tovarlarini (CJ Dropshipping / AliExpress) ulash va narx marjasini belgilash
+- [x] 1. Shopify App Store'dan CJ Dropshipping rasmiy ilovasini ochish va o'rnatishni boshlash
+- [x] 2. Shopify KYC cheklovini aylanib o'tish (Direct Open API v2.0 arxitekturasi tanlandi)
+- [x] 3. CJ Dropshipping API kalitini yaratish, autentifikatsiya qilish va serverga ulash (50,000 API ball, 2027-yilgacha yaroqli)
+- [x] 4. Norealniy / avant-garde tovarlarni Xitoy omboridan (CJ catalog) to'g'ridan-to'g'ri VID'lar orqali xaritalash
+- [x] 5. Avtomatik fulfillment pipeline amaliy tekshiruvi (KR-359523 buyurtmasi to'g'ridan-to'g'ri Xitoy omboriga tushdi va tasdiqlandi)
