@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KRAVØN — Experimental Objects & Artifacts</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="site-nav">
+    <div class="container nav-inner">
+      <a href="/" class="brand-logo">KRAVØN</a>
+
+      <nav class="category-nav">
+        <button class="cat-btn active" data-category="All">All Artifacts</button>
+        <button class="cat-btn" data-category="Objects">Objects</button>
+        <button class="cat-btn" data-category="Instruments">Instruments</button>
+        <button class="cat-btn" data-category="Wearables">Wearables</button>
+        <button class="cat-btn" data-category="Curiosities">Curiosities</button>
+      </nav>
+
+      <div class="nav-actions">
+        <select id="currencySelect" class="currency-select">
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+        </select>
+
+        <button id="bagTriggerBtn" class="bag-btn">
+          Bag <span id="bagCountBadge" class="bag-count">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero-quiet">
+      <h1 class="hero-title">Experimental archive.</h1>
+      <p class="hero-desc">Unclassified artifacts, rare physical objects and unpredictable editions.</p>
+    </section>
+
+    <div id="catalogGrid" class="catalog-grid"></div>
+  </main>
+
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+  <aside id="cartDrawer" class="cart-drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">Bag</h3>
+      <button id="drawerCloseBtn" class="btn-add" style="padding: 4px 10px; font-size: 11px;">Close</button>
+    </div>
+
+    <div class="free-ship-box">
+      <div id="freeShipText">Complimentary shipping on orders over $200.</div>
+      <div class="ship-progress-bar">
+        <div id="freeShipFill" class="ship-progress-fill" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <div id="drawerItems" class="drawer-items"></div>
+
+    <div class="drawer-footer">
+      <div class="coupon-row">
+        <input type="text" id="couponInput" class="coupon-input" placeholder="Coupon (VIP10)">
+        <button id="applyCouponBtn" class="btn-coupon">Apply</button>
+      </div>
+
+      <div class="ledger-group">
+        <div class="ledger-line">
+          <span>Subtotal</span>
+          <span id="ledgerSubtotal">$0.00</span>
+        </div>
+        <div class="ledger-line">
+          <span>Discount</span>
+          <span id="ledgerDiscount" style="color: var(--accent-gold);">$0.00</span>
+        </div>
+        <div class="ledger-line total">
+          <span>Total</span>
+          <span id="ledgerTotal">$0.00</span>
+        </div>
+      </div>
+
+      <button id="checkoutBtn" class="btn-checkout-now">
+        Proceed to Checkout
+      </button>
+    </div>
+  </aside>
+
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal-card">
+      <button id="modalCloseBtn" class="modal-close-btn">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

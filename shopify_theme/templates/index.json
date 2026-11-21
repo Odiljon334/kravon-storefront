@@ -1,0 +1,23 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "heading": "Engineered Performance Collection",
+        "subheading": "Modern tactical minimalist gear designed for daily carry and performance.",
+        "button_label": "Shop All"
+      }
+    },
+    "featured": {
+      "type": "featured-products",
+      "settings": {
+        "title": "Featured Releases",
+        "products_to_show": 6
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "featured"
+  ]
+}

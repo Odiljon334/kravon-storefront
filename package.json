@@ -1,0 +1,12 @@
+{
+  "name": "shopify-headless-storefront",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "NODE_ENV=test node --test test/storefront.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
