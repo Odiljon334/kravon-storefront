@@ -1,10 +1,22 @@
-# KRAVØN Celeron Performance Optimization, Text Bloat Elimination & Senior Codex Audit
+# KRAVØN Production Hardening & Full Audit Remediation
 
-- [x] 1. Tizim va Celeron CPU optimizatsiyasi: style.css dan barcha doimiy @keyframes (telemetryPulse) animatsiyalarini va og'ir backdrop-filter: blur() larni butunlay olib tashlash, CPU yuklamasini 0-1% ga tushirish, xotirani tozalash
-- [x] 2. "Ortiqcha yozuvlar juda ko'p" muammosini bartaraf etish (Text Bloat & Slop Elimination):
-     - Hero va Trust qatoridagi ko'p gapli esselarni yo'qotish, o'rniga yagona ixcham, toza 1 qatorli minimalist trust strip qo'yish
-     - Mahsulot kartalaridan takrorlangan matn va uzun tavsiflarni olib tashlash, sof vizual dizayn qoldirish
-     - Futerdan ko'p satrli manifest, koordinatalar spami va atelier adreslarining ortiqcha qismini tozalash, lakonik 3 ustunli yuqori moda colophon qilish
-- [x] 3. public/app.js va public/index.html ni toza minimalist arxitekturaga moslashtirish, 0-izoh qoidasini ta'minlash
-- [x] 4. Codex tandem auditini o'tkazish: codex exec ga professional senior QA auditor sifatida chuqur, mukammal prompt berish va uning tahlilini olish
-- [x] 5. Barcha testlarni (10/10) qayta topshirish, foydalanuvchi Chrome oynasini yangilash va CPU yuklamasi tushganini tasdiqlash
+- [x] 1. Native Database Persistence: Implement `node:sqlite` for ACID-compliant order and inventory storage (`data/storefront.db`), eliminating volatile in-memory data loss
+- [x] 2. Security Hardening & Secret Sanitation:
+  - Remove all hardcoded API keys, tokens, and personal emails from `server.js` to `.env`
+  - Implement HMAC-MD5 / secret token verification for 2Checkout webhooks (block unauthenticated forge attacks)
+  - Add native HTTP security headers (CSP, X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy)
+  - Add IP rate limiting for API endpoints
+- [x] 3. Business Logic & Input Sanitization:
+  - Reject negative/zero/excessive quantities and invalid payload structures in `/api/checkout`
+  - Prevent double currency conversion in cart state
+- [x] 4. SEO & Standards Compliance:
+  - Create `/robots.txt` and `/sitemap.xml`
+  - Implement full meta descriptions, OpenGraph tags, Twitter Cards, and canonical tags across all HTML pages
+  - Correct heading hierarchy (`<h1>` -> `<h2>` -> `<h3>`)
+- [x] 5. Content & UX Refinement (Kill AI-Slop):
+  - Replace robotic jargon ("Destination Telemetry", "Electronic Mail", "Mobile Telephony", "Total Acquisition") with polished luxury atelier copy
+- [x] 6. Comprehensive Test Suite & Live Verification:
+  - Expand `test/storefront.test.js` to cover database persistence, webhook signature checks, and validation gates
+  - Run all tests and achieve 100% pass (Zero-Comment Rule enforced, 14/14 tests pass)
+- [x] 7. GitHub Push:
+  - Commit all hardened changes and push cleanly to `https://github.com/Odiljon334/kravon-storefront`

@@ -4,6 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KRAVØN — Cyberpunk Techwear & Anime Artifacts</title>
+  <meta name="description" content="KRAVØN — Limited archive of avant-garde cyberpunk techwear, illuminated combat faceplates, and Japanese artisanal anime artifacts. Worldwide express dispatch.">
+  <link rel="canonical" href="https://kravon-archive.com/">
+  
+  <meta property="og:title" content="KRAVØN — Cyberpunk Techwear & Anime Artifacts">
+  <meta property="og:description" content="Limited archive of avant-garde cyberpunk techwear, illuminated combat faceplates, and Japanese artisanal anime artifacts.">
+  <meta property="og:image" content="https://oss-cf.cjdropshipping.com/product/2026/11/20/05/b5985e53-2f6b-44cf-9162-5e4031cba1f5_water.jpeg">
+  <meta property="og:url" content="https://kravon-archive.com/">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="KRAVØN — Cyberpunk Techwear & Anime Artifacts">
+  <meta name="twitter:description" content="Limited archive of avant-garde cyberpunk techwear and anime artifacts.">
+  <meta name="twitter:image" content="https://oss-cf.cjdropshipping.com/product/2026/11/20/05/b5985e53-2f6b-44cf-9162-5e4031cba1f5_water.jpeg">
+
   <link rel="stylesheet" href="/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,7 +73,7 @@
             <circle cx="10" cy="10" r="7"/>
             <path d="M10 3a7 7 0 0 0 0 14M3 10a7 7 0 0 0 14 0"/>
           </svg>
-          <span class="trust-text">Global Satellite Tracking</span>
+          <span class="trust-text">Global Courier Tracking</span>
         </div>
         <div class="trust-item">
           <svg class="trust-item-svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -72,7 +86,7 @@
             <rect x="4" y="9" width="12" height="9" rx="2"/>
             <path d="M7 9V6a3 3 0 0 1 6 0v3"/>
           </svg>
-          <span class="trust-text">256-Bit Encrypted Vault</span>
+          <span class="trust-text">256-Bit SSL Encrypted</span>
         </div>
       </div>
     </section>
@@ -83,13 +97,13 @@
           <circle cx="9" cy="9" r="6"/>
           <path d="M13.5 13.5L18 18"/>
         </svg>
-        <input type="text" id="searchInput" class="search-field" placeholder="Search archive (e.g. Katana, Faceplate, Denim)..." autocomplete="off">
+        <input type="text" id="searchInput" class="search-field" placeholder="Search archive (e.g. Katana, Faceplate, Denim)..." autocomplete="off" aria-label="Search archive">
         <button id="searchClearBtn" class="search-clear-btn" style="display: none;" aria-label="Clear Search">✕</button>
       </div>
 
       <div class="sort-box-wrap">
         <label for="sortSelect" class="sort-label">Sort:</label>
-        <select id="sortSelect" class="sort-select">
+        <select id="sortSelect" class="sort-select" aria-label="Sort products">
           <option value="featured">Featured Editions</option>
           <option value="price-asc">Price: Low to High</option>
           <option value="price-desc">Price: High to Low</option>
@@ -98,23 +112,26 @@
       </div>
     </div>
 
-    <div id="catalogGrid" class="catalog-grid"></div>
+    <section aria-labelledby="catalogHeading">
+      <h2 id="catalogHeading" class="visually-hidden">Curated Edition Catalog</h2>
+      <div id="catalogGrid" class="catalog-grid"></div>
+    </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-inner">
       <div class="footer-columns-grid">
         <div class="footer-col">
-          <h4 class="footer-col-title notranslate">KRAVØN ARCHIVE</h4>
-          <p class="footer-col-desc">Autonomous archive concept store for avant-garde techwear and anime artifacts.</p>
+          <h3 class="footer-col-title notranslate">KRAVØN ARCHIVE</h3>
+          <p class="footer-col-desc">Autonomous concept store for avant-garde techwear and anime artifacts.</p>
           <div class="system-status-indicator">
             <span class="pulse-indicator"></span>
-            <span class="status-msg">Atelier Network Operational</span>
+            <span class="status-msg">Direct Atelier Fulfillment</span>
           </div>
         </div>
 
         <div class="footer-col">
-          <h4 class="footer-col-title">DIRECTIVES</h4>
+          <h3 class="footer-col-title">DIRECTIVES</h3>
           <ul class="footer-col-links">
             <li><a href="/privacy.html" class="policy-link-btn" data-policy="privacy">Privacy Protocol</a></li>
             <li><a href="/terms.html" class="policy-link-btn" data-policy="terms">Terms of Engagement</a></li>
@@ -124,13 +141,13 @@
         </div>
 
         <div class="footer-col">
-          <h4 class="footer-col-title">CONCIERGE & ACCESS</h4>
+          <h3 class="footer-col-title">CONCIERGE & ACCESS</h3>
           <div class="concierge-line">
             <span class="concierge-email-text" id="conciergeMail">concierge@kravon-archive.com</span>
-            <button id="copyConciergeBtn" class="copy-badge-btn" title="Copy Concierge Email">COPY</button>
+            <button id="copyConciergeBtn" class="copy-badge-btn" title="Copy Concierge Email" aria-label="Copy Concierge Email">COPY</button>
           </div>
           <form id="newsletterForm" class="dispatch-form" onsubmit="return false;" style="margin-top: 14px;">
-            <input type="email" id="newsletterEmail" class="dispatch-input" placeholder="VIP email access..." required>
+            <input type="email" id="newsletterEmail" class="dispatch-input" placeholder="VIP email access..." required aria-label="VIP email access">
             <button type="submit" id="newsletterSubmitBtn" class="dispatch-btn">JOIN</button>
           </form>
           <div id="newsletterFeedback" class="dispatch-feedback"></div>
@@ -176,7 +193,7 @@
               <rect width="48" height="30" rx="4" fill="#0d0f14"/>
               <path d="M14.5 13.9C14.5 12.3 15.8 11.4 15.9 11.3C15.1 10.2 13.9 10 13.5 10C12.5 9.9 11.5 10.6 11 10.6C10.5 10.6 9.7 10 8.9 10C7.8 10 6.8 10.7 6.2 11.8C5 13.9 5.9 17 7.1 18.7C7.7 19.5 8.3 20.4 9.2 20.4C10.1 20.4 10.4 19.8 11.5 19.8C12.6 19.8 12.9 20.4 13.8 20.4C14.7 20.4 15.3 19.6 15.9 18.8C16.6 17.8 16.9 16.9 16.9 16.8C16.8 16.8 14.5 15.9 14.5 13.9Z" fill="#FFFFFF"/>
               <path d="M13.2 8.9C13.7 8.3 14 7.5 13.9 6.7C13.2 6.7 12.3 7.2 11.8 7.8C11.4 8.3 11 9.1 11.1 9.9C11.9 10 12.7 9.5 13.2 8.9Z" fill="#FFFFFF"/>
-              <path d="M19.5 10.2H22.5C24.5 10.2 25.8 11.4 25.8 13.3C25.8 15.2 24.5 16.4 22.5 16.4H21V20H19.5V10.2ZM22.3 14.9C23.5 14.9 24.2 14.2 24.2 13.3C24.2 12.4 23.5 11.7 22.3 11.7H21V14.9H22.3ZM26.8 17.5C26.8 16.1 27.9 15.2 29.8 15.1L31.8 15V14.4C31.8 13.5 31.2 13 30.2 13C29.3 13 28.7 13.4 28.5 14.1H27.1C27.3 12.7 28.5 11.7 30.2 11.7C32.1 11.7 33.3 12.8 33.3 14.4V20H31.9V18.7H31.8C31.3 19.6 30.3 20.2 29.2 20.2C27.8 20.2 26.8 19 26.8 17.5ZM31.8 16.9V16.1L30 16.2C29.1 16.3 28.4 16.8 28.4 17.6C28.4 18.4 29 18.9 29.8 18.9C31 18.9 31.8 18 31.8 16.9ZM34.2 12H35.8L37.7 17.5L39.6 12H41.2L38.4 19.3L37.3 22H35.7L36.8 19.4L34.2 12Z" fill="#FFFFFF"/>
+              <path d="M19.5 10.2H22.5C24.5 10.2 25.8 11.4 25.8 13.3C25.8 15.2 24.5 16.4 22.5 16.4H21V20H19.5V10.2ZM22.3 14.9C23.5 14.9 24.2 14.2 24.2 13.3C24.2 12.4 23.5 11.7 22.3 11.7H21V14.9H22.3ZM26.8 17.5C26.8 16.1 27.9 15.2 29.8 15.1L31.8 15V14.4C31.8 13.5 31.2 13 30.2 13C29.3 13 28.7 13.4 28.5 14.1H27.1C27.3 12.7 28.5 11.7 30.2 11.7C32.1 11.7 33.3 12.8 33.3 14.4V20H31.9V18.7H31.8C31.3 19.6 30.3 20.2 29.2 20.2C27.8 20.2 26.8 19 26.8 17.5ZM31.8 16.9V16.1L30 16.2C29.1 16.3 28.4 16.8 28.4 17.6C28.4 18.4 29 18.9 29.8 18.9C31 18.9 31.8 18 31.8 16.9ZM34.2 12H35.8L37.7 17.5L39.6 12H41L38.6 18.8L37.7 21.2H36.3L37.2 18.9L34.2 12Z" fill="#FFFFFF"/>
             </svg>
           </div>
 
@@ -206,10 +223,10 @@
   </footer>
 
   <div id="drawerOverlay" class="drawer-overlay"></div>
-  <aside id="cartDrawer" class="cart-drawer">
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Shopping Bag Drawer">
     <div class="drawer-header">
       <div class="drawer-header-left">
-        <h3 class="drawer-title">ARCHIVE BAG</h3>
+        <h3 class="drawer-title">SHOPPING BAG</h3>
         <span class="drawer-count-tag" id="drawerCountTag">0 ITEMS</span>
       </div>
       <button id="drawerCloseBtn" class="drawer-close-x" aria-label="Close Bag">✕</button>
@@ -226,22 +243,22 @@
       <div id="drawerItems" class="drawer-items"></div>
 
       <div id="checkoutFormSection" class="checkout-form-section">
-        <div class="form-header-badge">DESTINATION TELEMETRY</div>
+        <div class="form-header-badge">DELIVERY DESTINATION</div>
         <div class="input-grid">
           <div class="input-wrap">
             <label class="field-label" for="custName">Recipient Full Name *</label>
             <input type="text" id="custName" class="form-field" placeholder="Elena Rostova" required autocomplete="name">
           </div>
           <div class="input-wrap">
-            <label class="field-label" for="custEmail">Electronic Mail *</label>
+            <label class="field-label" for="custEmail">Email Address *</label>
             <input type="email" id="custEmail" class="form-field" placeholder="client@domain.com" required autocomplete="email">
           </div>
           <div class="input-wrap">
-            <label class="field-label" for="custPhone">Mobile Telephony *</label>
+            <label class="field-label" for="custPhone">Mobile Phone Number *</label>
             <input type="tel" id="custPhone" class="form-field" placeholder="+1 (555) 019-2834" required autocomplete="tel">
           </div>
           <div class="input-wrap">
-            <label class="field-label" for="custCountry">Destination Territory *</label>
+            <label class="field-label" for="custCountry">Country / Region *</label>
             <select id="custCountry" class="form-field" autocomplete="country">
               <option value="US">United States (Domestic Priority)</option>
               <option value="GB">United Kingdom (Express Freight)</option>
@@ -277,28 +294,28 @@
           <svg class="vault-svg" viewBox="0 0 16 16" fill="currentColor">
             <path fill-rule="evenodd" d="M8 0a4 4 0 0 0-4 4v2H2.5A1.5 1.5 0 0 0 1 7.5v7A1.5 1.5 0 0 0 2.5 16h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 6H12V4a4 4 0 0 0-4-4zm2.5 6V4a2.5 2.5 0 0 0-5 0v2h5z"/>
           </svg>
-          <span>256-Bit Encrypted Checkout · Worldwide Priority Courier</span>
+          <span>256-Bit SSL Encrypted Checkout · Worldwide Priority Courier</span>
         </div>
       </div>
     </div>
 
     <div class="drawer-footer">
       <div class="coupon-row">
-        <input type="text" id="couponInput" class="coupon-input" placeholder="Promotional Key (e.g. VIP10)" autocomplete="off">
+        <input type="text" id="couponInput" class="coupon-input" placeholder="Promotional Code (e.g. VIP10)" autocomplete="off" aria-label="Promotional Code">
         <button id="applyCouponBtn" class="btn-coupon">APPLY</button>
       </div>
 
       <div class="ledger-group">
         <div class="ledger-line">
-          <span>Archive Subtotal</span>
+          <span>Subtotal</span>
           <span id="ledgerSubtotal">$0.00</span>
         </div>
         <div class="ledger-line">
-          <span>Promotional Allocation</span>
+          <span>Promotional Discount</span>
           <span id="ledgerDiscount" style="color: var(--accent-gold);">$0.00</span>
         </div>
         <div class="ledger-line total">
-          <span>Total Acquisition</span>
+          <span>Order Total</span>
           <span id="ledgerTotal">$0.00</span>
         </div>
       </div>
@@ -310,14 +327,14 @@
   </aside>
 
   <div id="modalBackdrop" class="modal-backdrop">
-    <div class="modal-card">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Product Quick View">
       <button id="modalCloseBtn" class="modal-close-btn" aria-label="Close Modal">✕</button>
       <div id="modalBody"></div>
     </div>
   </div>
 
   <div id="policyModalBackdrop" class="modal-backdrop">
-    <div class="modal-card policy-modal-card">
+    <div class="modal-card policy-modal-card" role="dialog" aria-modal="true" aria-label="Policy Information">
       <button id="policyModalCloseBtn" class="modal-close-btn" aria-label="Close Policy Modal">✕</button>
       <div id="policyModalBody" class="policy-modal-body"></div>
     </div>
