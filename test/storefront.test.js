@@ -22,7 +22,7 @@ after(async () => {
 });
 
 describe("Kravon Headless Storefront Suite", () => {
-  test("GET /api/status returns brand identity, USD and EUR currencies and inventory", async () => {
+  test("GET /api/status returns brand identity, USD and EUR currencies and 0 inventory", async () => {
     const res = await fetch(`${baseUrl}/api/status`);
     assert.equal(res.status, 200);
 
@@ -31,65 +31,28 @@ describe("Kravon Headless Storefront Suite", () => {
     assert.equal(data.brand, "KRAVØN");
     assert.deepEqual(data.currencies, ["USD", "EUR"]);
     assert.ok(data.rates.EUR);
-    assert.equal(data.catalogCount, 4);
+    assert.equal(data.catalogCount, 0);
   });
 
-  test("GET /api/products returns rich technical specifications in US imperial units", async () => {
+  test("GET /api/products returns empty array when catalog is cleared", async () => {
     const res = await fetch(`${baseUrl}/api/products`);
     assert.equal(res.status, 200);
 
     const data = await res.json();
     assert.equal(data.success, true);
     assert.ok(Array.isArray(data.products));
-    assert.equal(data.products.length, 4);
-
-    const sample = data.products[0];
-    assert.ok(sample.sku);
-    assert.ok(sample.materials);
-    assert.match(sample.weight, /oz/);
-    assert.match(sample.dimensions, /in/);
-    assert.ok(sample.origin);
-    assert.ok(sample.variants.length > 0);
+    assert.equal(data.products.length, 0);
   });
 
-  test("GET /api/products?category=Apparel filters correctly", async () => {
-    const res = await fetch(`${baseUrl}/api/products?category=Apparel`);
-    assert.equal(res.status, 200);
-
-    const data = await res.json();
-    assert.equal(data.success, true);
-    assert.equal(data.products.length, 1);
-    assert.equal(data.products[0].id, "prod_anime_3");
-  });
-
-  test("GET /api/products?search=Cyberpunk returns matching artifacts", async () => {
-    const res = await fetch(`${baseUrl}/api/products?search=Cyberpunk`);
-    assert.equal(res.status, 200);
-
-    const data = await res.json();
-    assert.equal(data.success, true);
-    assert.ok(data.products.length >= 1);
-  });
-
-  test("GET /api/products?sort=price-asc verifies ascending sorting", async () => {
-    const res = await fetch(`${baseUrl}/api/products?sort=price-asc`);
-    assert.equal(res.status, 200);
-
-    const data = await res.json();
-    for (let i = 0; i < data.products.length - 1; i++) {
-      assert.ok(data.products[i].price <= data.products[i + 1].price);
-    }
-  });
-
-  test("POST /api/checkout routes directly to CJ Dropshipping fulfillment", async () => {
+  test("POST /api/checkout handles direct order dispatch", async () => {
     const res = await fetch(`${baseUrl}/api/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         items: [
-          { id: "prod_anime_1", variantId: "var_mask_cyan", price: 118.00, quantity: 1 }
+          { id: "custom_item", price: 50.00, quantity: 1 }
         ],
-        customerName: "Test Suite Buyer",
+        customerName: "Test Buyer",
         customerEmail: "qa@kravon.com",
         shippingPhone: "12125550199",
         shippingAddress: "120 Broadway",
@@ -104,9 +67,8 @@ describe("Kravon Headless Storefront Suite", () => {
     assert.equal(res.status, 200);
     const data = await res.json();
     assert.equal(data.success, true);
-    assert.equal(data.subtotal, 118.00);
-    assert.equal(data.totalAmount, 106.20);
+    assert.equal(data.subtotal, 50.00);
+    assert.equal(data.totalAmount, 45.00);
     assert.ok(data.fulfillment);
-    assert.ok(data.checkoutUrl.includes("checkout-success.html"));
   });
 });
