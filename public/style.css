@@ -634,6 +634,61 @@ button {
   line-height: 1.6;
 }
 
+.checkout-form-section {
+  padding: 16px 0;
+  border-top: 1px solid var(--border-color);
+  margin-top: 12px;
+}
+
+.form-header-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.form-field {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: var(--font-main);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-field:focus {
+  border-color: var(--accent);
+}
+
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.card-input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-input-box .sub-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
 @media (max-width: 768px) {
   .nav-inner {
     flex-wrap: wrap;

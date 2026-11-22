@@ -125,7 +125,7 @@ function renderCatalog() {
 
   if (filtered.length === 0) {
     container.innerHTML = `<div class="empty-state-box">
-      <div class="empty-state-tag">ARCHIVE // STATUS 00</div>
+      <div class="empty-state-tag">ARCHIVE · STATUS 00</div>
       <h3 class="empty-state-title">ARXIVDA HECH QANDAY BUYUM QOLMADI</h3>
       <p class="empty-state-sub">Barcha artefaktlar va buyumlar katalogdan to'liq o'chirildi. Yangi eksklyuziv ob'ektlar kiritilishi kutilmoqda.</p>
     </div>`;
@@ -434,9 +434,24 @@ async function handleCheckoutExecution() {
     return;
   }
 
+  const custName = document.getElementById("custName")?.value.trim();
+  const custEmail = document.getElementById("custEmail")?.value.trim();
+  const custPhone = document.getElementById("custPhone")?.value.trim();
+  const custCountry = document.getElementById("custCountry")?.value || "US";
+  const custAddress = document.getElementById("custAddress")?.value.trim();
+  const custCity = document.getElementById("custCity")?.value.trim();
+  const custProvince = document.getElementById("custProvince")?.value.trim();
+  const custZip = document.getElementById("custZip")?.value.trim();
+
+  if (!custName || !custAddress || !custCity || !custZip) {
+    showToast("Iltimos, yetkazib berish manzilini to'ldiring");
+    document.getElementById("custName")?.focus();
+    return;
+  }
+
   const btn = document.getElementById("checkoutBtn");
   btn.disabled = true;
-  btn.innerHTML = `Connecting to checkout...`;
+  btn.innerHTML = `Buyurtma Xitoy omboriga yuborilmoqda...`;
 
   try {
     const res = await fetch("/api/checkout", {
@@ -444,6 +459,14 @@ async function handleCheckoutExecution() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         items: state.cart,
+        customerName: custName,
+        customerEmail: custEmail || "client@kravon-archive.com",
+        shippingPhone: custPhone || "+12125550199",
+        shippingCountryCode: custCountry,
+        shippingAddress: custAddress,
+        shippingCity: custCity,
+        shippingProvince: custProvince || custCity,
+        shippingZip: custZip,
         discountCode: state.appliedCoupon,
         currency: state.currency
       })

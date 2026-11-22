@@ -21,7 +21,126 @@ let cjTokenCache = {
 };
 
 const FULFILLMENT_ORDERS = [];
-let MOCK_PRODUCTS = [];
+
+let MOCK_PRODUCTS = [
+  {
+    id: "prod_anime_1",
+    shopifyId: "gid://shopify/Product/900101",
+    sku: "KR-CYB-MASK-01",
+    cjPid: "2611200537371608500",
+    title: "Cyberpunk LED Light-Up Winged Mask",
+    handle: "cyberpunk-led-light-up-winged-mask",
+    category: "Cyberpunk Gear",
+    price: 118.00,
+    currency: "USD",
+    rating: 4.9,
+    reviewsCount: 142,
+    stockCount: 25,
+    availableForSale: true,
+    tagline: "Futuristic dual-ring LED illuminated combat faceplate with modular braided accents.",
+    description: "Engineered for festival stages and cyberpunk environments. Constructed with high-impact acrylic chassis, integrated dual LED halo illumination rings with multi-pattern pulse modes, and detachable braided cyber-cables.",
+    materials: "Reinforced Polycarbonate Chassis, Dual LED Light Rings, Braided Nylon Cables",
+    weight: "12.4 oz",
+    dimensions: "9.4 × 7.1 × 4.7 in",
+    origin: "Shenzhen Mecha Works",
+    images: [
+      "https://oss-cf.cjdropshipping.com/product/2026/11/20/05/b5985e53-2f6b-44cf-9162-5e4031cba1f5_water.jpeg",
+      "https://oss-cf.cjdropshipping.com/product/2026/11/20/05/49975949-708d-40ab-a6e0-ccb5590bdc7e_water.jpeg"
+    ],
+    variants: [
+      { id: "var_mask_cyan", cjVid: "2611200537371609400", title: "Dual Halo Cyan", hex: "#00e5ff", price: 118.00, inStock: true, imageIndex: 0 },
+      { id: "var_mask_red", cjVid: "2611200537371609401", title: "Cyber Crimson", hex: "#ff0055", price: 124.00, inStock: true, imageIndex: 1 }
+    ],
+    tags: ["Cyberpunk", "Cosplay", "LED Mask", "Techwear", "Futuristic"]
+  },
+  {
+    id: "prod_anime_2",
+    shopifyId: "gid://shopify/Product/900102",
+    sku: "KR-SAM-JKT-02",
+    cjPid: "2610280840421601600",
+    title: "Men's Black Samurai Raw-Edge Denim Jacket",
+    handle: "mens-black-samurai-raw-edge-denim-jacket",
+    category: "Techwear",
+    price: 89.00,
+    currency: "USD",
+    rating: 4.8,
+    reviewsCount: 96,
+    stockCount: 19,
+    availableForSale: true,
+    tagline: "Heavyweight dark denim outerwear tailored with Japanese samurai drape silhouette.",
+    description: "Distressed black raw-edge denim constructed with asymmetric paneling and reinforced stitching. Features Japanese neo-tokyo oversized cut, utility pockets and unstructured collar inspired by traditional ronin battle garments.",
+    materials: "14oz Washed Black Cotton Denim, Custom Matte Black Hardware",
+    weight: "28.2 oz",
+    dimensions: "Oversized Tailored Fit",
+    origin: "Kyoto Denim Atelier",
+    images: [
+      "https://cf.cjdropshipping.com/quick/product/f53c443a-bf62-41b7-bde3-5d8cfe4fa0a3.jpg"
+    ],
+    variants: [
+      { id: "var_jkt_m", cjVid: "2610280840421602600", title: "Medium (M)", hex: "#16171a", price: 89.00, inStock: true, imageIndex: 0 },
+      { id: "var_jkt_l", cjVid: "2610280840421602600", title: "Large (L)", hex: "#22242a", price: 89.00, inStock: true, imageIndex: 0 }
+    ],
+    tags: ["Samurai", "Denim Jacket", "Techwear", "Anime Streetwear", "Japanese"]
+  },
+  {
+    id: "prod_anime_3",
+    shopifyId: "gid://shopify/Product/900103",
+    sku: "KR-SWD-HOD-03",
+    cjPid: "2113090605992165377",
+    title: "Japanese Samurai Katana 3D Graphic Hoodie",
+    handle: "japanese-samurai-katana-3d-graphic-hoodie",
+    category: "Apparel",
+    price: 44.00,
+    currency: "USD",
+    rating: 4.9,
+    reviewsCount: 215,
+    stockCount: 40,
+    availableForSale: true,
+    tagline: "High-density all-over graphic print featuring Japanese dual blade battle iconography.",
+    description: "Premium fleece-lined pullover sweatshirt crafted with vibrant 3D dye-sublimation print that will never fade or crack. Features double-lined drawstring hood, kangaroo pouch pocket, and rib-knit cuffs.",
+    materials: "Fleece-Lined Spandex Blend, Anti-Pill High Density Knit",
+    weight: "18.5 oz",
+    dimensions: "Relaxed Streetwear Fit",
+    origin: "Osaka Streetwear Guild",
+    images: [
+      "https://cj-product-center.oss-accelerate.aliyuncs.com/supplier/1688/9f977c5b-dd48-46bd-bc49-2fc3be4fd8a1.jpg",
+      "https://cj-product-center.oss-accelerate.aliyuncs.com/supplier/1688/2c932484-05f9-46b2-902b-6a02b62289d6.jpg"
+    ],
+    variants: [
+      { id: "var_hoodie_l", cjVid: "2113090606143160322", title: "Katana Edition (L)", hex: "#1a1a24", price: 44.00, inStock: true, imageIndex: 0 },
+      { id: "var_hoodie_xl", cjVid: "2113090606143160322", title: "Katana Edition (XL)", hex: "#111218", price: 44.00, inStock: true, imageIndex: 1 }
+    ],
+    tags: ["Katana", "Anime Hoodie", "Streetwear", "Japanese Style", "Apparel"]
+  },
+  {
+    id: "prod_anime_4",
+    shopifyId: "gid://shopify/Product/900104",
+    sku: "KR-NIN-BLD-04",
+    cjPid: "2090192579438338049",
+    title: "3-Piece Ninja Warrior Dagger Prop Set",
+    handle: "3-piece-ninja-warrior-dagger-prop-set",
+    category: "Artifacts",
+    price: 54.00,
+    currency: "USD",
+    rating: 5.0,
+    reviewsCount: 88,
+    stockCount: 15,
+    availableForSale: true,
+    tagline: "Cosplay anime weapon triple-blade prop set with traditional braided tassels.",
+    description: "Three-piece collector and cosplay prop set replicating curved ninja daggers with ergonomic hilt wrapping and blood-red flowing tassels. Lightweight, convention-safe construction with lifelike metallic finish.",
+    materials: "Reinforced Safe Polymer Alloy, Woven Silk Tassels, Cord-Wrapped Grips",
+    weight: "11.2 oz",
+    dimensions: "12.2 in Blade Length",
+    origin: "Edo Armory Workshop",
+    images: [
+      "https://cf.cjdropshipping.com/4e02226c-782e-4ac7-99e6-4ae6f4ed40db.png"
+    ],
+    variants: [
+      { id: "var_dagger_set", cjVid: "2090192579601915905", title: "3-Blade Complete Set", hex: "#8b1111", price: 54.00, inStock: true, imageIndex: 0 }
+    ],
+    tags: ["Ninja", "Cosplay", "Katana", "Dagger", "Anime Props", "Artifacts"]
+  }
+];
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -148,13 +267,23 @@ async function queryShopifyStorefront(query, variables = {}) {
   }
 }
 
+app.get("/api/status", (req, res) => {
+  res.json({
+    status: "online",
+    brand: "KRAVØN",
+    currencies: ["USD", "EUR"],
+    rates: { USD: 1.0, EUR: 0.92 },
+    catalogCount: MOCK_PRODUCTS.length
+  });
+});
+
 app.get("/api/health", (req, res) => {
   res.json({
     status: "healthy",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
-    storefront: "KRAVON Avant-Garde Atelier",
-    version: "2.5.0",
+    storefront: "KRAVON Anime & Cyberpunk Atelier",
+    version: "3.0.0",
     fulfillmentEngine: "CJ_DROPSHIPPING_OPEN_API",
     cjStatus: cjTokenCache.token ? "ACTIVE" : "STANDBY",
     productsCount: MOCK_PRODUCTS.length,
@@ -192,86 +321,6 @@ app.get("/api/categories", (req, res) => {
 app.get("/api/products", async (req, res) => {
   const { category, search, sort } = req.query;
 
-  if (SHOPIFY_STORE_DOMAIN && SHOPIFY_STOREFRONT_ACCESS_TOKEN) {
-    const storefrontQuery = `
-      query getProducts($first: Int!) {
-        products(first: $first) {
-          edges {
-            node {
-              id
-              title
-              handle
-              description
-              availableForSale
-              productType
-              images(first: 3) {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-              variants(first: 5) {
-                edges {
-                  node {
-                    id
-                    title
-                    price {
-                      amount
-                      currencyCode
-                    }
-                    availableForSale
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
-
-    const data = await queryShopifyStorefront(storefrontQuery, { first: 20 });
-    if (data?.products?.edges?.length) {
-      const liveProducts = data.products.edges.map(({ node }, i) => ({
-        id: `shopify_${node.id.split("/").pop()}`,
-        shopifyId: node.id,
-        sku: `KR-LIVE-0${i + 1}`,
-        title: node.title,
-        handle: node.handle,
-        category: node.productType || "Artifacts",
-        price: parseFloat(node.variants.edges[0]?.node.price.amount || "250.00"),
-        currency: node.variants.edges[0]?.node.price.currencyCode || "USD",
-        rating: 4.9,
-        reviewsCount: 42 + i * 11,
-        stockCount: 8,
-        availableForSale: node.availableForSale,
-        tagline: node.description.slice(0, 75),
-        description: node.description,
-        materials: "Precision Composite",
-        weight: "1.2 lbs",
-        dimensions: "Modular",
-        origin: "Zurich / Tokyo",
-        images: node.images.edges.map(e => e.node.url),
-        variants: node.variants.edges.map(({ node: v }, idx) => ({
-          id: v.id,
-          title: v.title,
-          hex: idx === 0 ? "#111215" : "#7a7974",
-          price: parseFloat(v.price.amount),
-          inStock: v.availableForSale,
-          imageIndex: 0
-        })),
-        tags: ["Live", "Shopify"]
-      }));
-
-      return res.json({
-        success: true,
-        count: liveProducts.length,
-        source: "shopify_storefront_api",
-        products: liveProducts
-      });
-    }
-  }
-
   let results = [...MOCK_PRODUCTS];
 
   if (category && category !== "All") {
@@ -299,29 +348,14 @@ app.get("/api/products", async (req, res) => {
   res.json({
     success: true,
     count: results.length,
-    source: "mock_engine",
+    source: "kravon_anime_engine",
     products: results
   });
 });
 
-app.post("/api/products", (req, res) => {
-  const newProduct = req.body;
-  if (!newProduct || !newProduct.title) {
-    return res.status(400).json({ success: false, message: "Invalid product data" });
-  }
-  newProduct.id = newProduct.id || `prod_${Date.now()}`;
-  MOCK_PRODUCTS.push(newProduct);
-  res.json({ success: true, count: MOCK_PRODUCTS.length, product: newProduct });
-});
-
-app.delete("/api/products", (req, res) => {
-  MOCK_PRODUCTS = [];
-  res.json({ success: true, count: 0, message: "All products deleted" });
-});
-
 app.get("/api/products/:id", (req, res) => {
   const { id } = req.params;
-  const product = MOCK_PRODUCTS.find(p => p.id === id || p.handle === id || p.shopifyId === id || p.sku === id);
+  const product = MOCK_PRODUCTS.find(p => p.id === id || p.handle === id || p.sku === id);
   if (!product) {
     return res.status(404).json({ success: false, message: "Item not found" });
   }
@@ -329,7 +363,20 @@ app.get("/api/products/:id", (req, res) => {
 });
 
 app.post("/api/checkout", async (req, res) => {
-  const { items, customerEmail, customerName, shippingAddress, discountCode, currency = "USD" } = req.body;
+  const {
+    items,
+    customerEmail,
+    customerName,
+    shippingPhone,
+    shippingCountryCode = "US",
+    shippingCountry = "United States",
+    shippingProvince = "New York",
+    shippingCity = "New York",
+    shippingAddress,
+    shippingZip,
+    discountCode,
+    currency = "USD"
+  } = req.body;
 
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ success: false, message: "Cart cannot be empty" });
@@ -353,26 +400,44 @@ app.post("/api/checkout", async (req, res) => {
     const matchedVariant = matched?.variants?.find(v => v.id === item.variantId) || matched?.variants?.[0];
     return {
       id: item.id,
-      title: item.title || matched?.title || "Artifact Object",
+      title: item.title || matched?.title || "Anime Cyberpunk Artifact",
       cjVid: matchedVariant?.cjVid || "1525003850212716544",
       quantity: item.quantity || 1,
       price: item.price
     };
   });
 
+  const finalName = customerName || "Kravon Private Client";
+  const finalEmail = customerEmail || "client@kravon-archive.com";
+  const finalPhone = shippingPhone || "12125550199";
+  const finalAddress = shippingAddress || "120 Broadway St, Suite 400";
+  const finalCity = shippingCity || "New York";
+  const finalProvince = shippingProvince || "New York";
+  const finalZip = shippingZip || "10005";
+  const finalCountryCode = shippingCountryCode || "US";
+  const finalCountry = shippingCountry || "United States";
+
   const cjFulfillment = await createCJDropshippingOrder({
     orderId,
-    customerName: customerName || "Kravon Private Client",
-    customerEmail: customerEmail || "client@kravon-archive.com",
-    shippingAddress: shippingAddress || "120 Broadway St, Suite 400",
+    customerName: finalName,
+    customerEmail: finalEmail,
+    phone: finalPhone,
+    shippingAddress: finalAddress,
+    shippingCity: finalCity,
+    shippingProvince: finalProvince,
+    shippingZip: finalZip,
+    shippingCountryCode: finalCountryCode,
+    shippingCountry: finalCountry,
     products: enrichedProducts
   });
 
   const orderRecord = {
     orderId,
     timestamp: new Date().toISOString(),
-    customerEmail: customerEmail || "client@kravon-archive.com",
-    customerName: customerName || "Kravon Private Client",
+    customerEmail: finalEmail,
+    customerName: finalName,
+    shippingPhone: finalPhone,
+    shippingAddress: `${finalAddress}, ${finalCity}, ${finalProvince} ${finalZip}, ${finalCountry}`,
     itemsCount: items.length,
     subtotal: parseFloat((rawSubtotal * rate).toFixed(2)),
     totalAmount: parseFloat(totalAmount.toFixed(2)),
@@ -384,6 +449,8 @@ app.post("/api/checkout", async (req, res) => {
 
   FULFILLMENT_ORDERS.unshift(orderRecord);
 
+  const checkoutUrl = `/checkout-success.html?orderId=${orderId}&total=${totalAmount.toFixed(2)}&currency=${currencySymbol}&discount=${appliedDiscount || "NONE"}&cjStatus=${encodeURIComponent(cjFulfillment.status || "CONFIRMED_IN_CHINA")}&name=${encodeURIComponent(finalName)}&address=${encodeURIComponent(finalAddress)}&city=${encodeURIComponent(finalCity)}`;
+
   res.json({
     success: true,
     provider: "kravon_cj_automated_pipeline",
@@ -393,7 +460,8 @@ app.post("/api/checkout", async (req, res) => {
     totalAmount: parseFloat(totalAmount.toFixed(2)),
     currency: currencySymbol,
     fulfillment: cjFulfillment,
-    checkoutUrl: `/checkout-success.html?orderId=${orderId}&total=${totalAmount.toFixed(2)}&currency=${currencySymbol}&discount=${appliedDiscount || "NONE"}&cjStatus=${encodeURIComponent(cjFulfillment.status || "CONFIRMED_IN_CHINA")}`
+    order: orderRecord,
+    checkoutUrl
   });
 });
 

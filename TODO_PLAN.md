@@ -1,7 +1,7 @@
-# TODO Plan: CJ Dropshipping Auto-Fulfillment Integration
+# KRAVØN Catalog Alignment & Real CJ Factory Sync
 
-- [x] 1. Shopify App Store'dan CJ Dropshipping rasmiy ilovasini ochish va o'rnatishni boshlash
-- [x] 2. Shopify KYC cheklovini aylanib o'tish (Direct Open API v2.0 arxitekturasi tanlandi)
-- [x] 3. CJ Dropshipping API kalitini yaratish, autentifikatsiya qilish va serverga ulash (50,000 API ball, 2027-yilgacha yaroqli)
-- [x] 4. Norealniy / avant-garde tovarlarni Xitoy omboridan (CJ catalog) to'g'ridan-to'g'ri VID'lar orqali xaritalash
-- [x] 5. Avtomatik fulfillment pipeline amaliy tekshiruvi (KR-359523 buyurtmasi to'g'ridan-to'g'ri Xitoy omboriga tushdi va tasdiqlandi)
+- [x] 1. server.js da MOCK_PRODUCTS ni 100% haqiqiy CJ tovarlari, ularning rasmiy CDN rasmlari va haqiqiy VID lari bilan yangilash
+- [x] 2. public/index.html navigatsiya toifalarini (Cyberpunk Gear, Techwear, Apparel, Artifacts) yangilash
+- [x] 3. test/storefront.test.js testlarini yangi tovarlar va toifalarga moslab sinovdan o'tkazish (6/6 pass)
+- [x] 4. Server demonini qayta ishga tushirib, 4 ta tovar rasmi, nomi va narxini amalda tekshirish
+- [x] 5. Ruthless zero-comment auditdan o'tkazish va o'zgarishlarni git ga saqlash

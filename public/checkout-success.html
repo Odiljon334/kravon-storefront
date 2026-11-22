@@ -21,15 +21,15 @@
       background: #15171c;
       border: 1px solid #323642;
       border-radius: 14px;
-      padding: 44px 36px;
-      max-width: 520px;
+      padding: 40px 32px;
+      max-width: 540px;
       width: 100%;
       box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7);
       text-align: center;
     }
     .check-icon {
-      width: 60px;
-      height: 60px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       background: rgba(34, 197, 94, 0.15);
       border: 1.5px solid #22c55e;
@@ -37,40 +37,40 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
+      margin: 0 auto 18px;
     }
     .receipt-title {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 700;
       color: #ffffff;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       letter-spacing: -0.02em;
     }
     .receipt-desc {
-      font-size: 14px;
-      color: #d1d5db;
-      line-height: 1.6;
-      margin-bottom: 26px;
+      font-size: 13px;
+      color: #9ca3af;
+      line-height: 1.5;
+      margin-bottom: 22px;
     }
     .receipt-box {
       background: #1c1f26;
       border: 1px solid #3a3f4d;
       border-radius: 10px;
-      padding: 22px;
+      padding: 18px 20px;
       text-align: left;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .receipt-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       font-size: 13px;
     }
     .receipt-label {
       color: #9ca3af;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -78,16 +78,19 @@
       color: #ffffff;
       font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 13px;
+      text-align: right;
+      max-width: 60%;
+      word-break: break-word;
     }
     .status-badge {
       background: rgba(34, 197, 94, 0.15);
       color: #4ade80;
       border: 1px solid rgba(34, 197, 94, 0.4);
-      padding: 4px 10px;
-      border-radius: 6px;
+      padding: 3px 8px;
+      border-radius: 5px;
       font-weight: 700;
-      font-size: 12px;
+      font-size: 11px;
       font-family: 'JetBrains Mono', monospace;
       letter-spacing: 0.04em;
     }
@@ -96,49 +99,55 @@
       justify-content: space-between;
       align-items: baseline;
       border-top: 1px solid #3a3f4d;
-      padding-top: 16px;
+      padding-top: 14px;
       margin-top: 6px;
     }
     .total-label {
       color: #ffffff;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
     }
     .total-amount {
       color: #f5f4ef;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
-    .mode-note {
-      background: #0f1115;
-      border-left: 3px solid #c89666;
-      border-radius: 6px;
-      padding: 12px 16px;
-      margin-bottom: 26px;
+    .logistics-card {
+      background: #111317;
+      border: 1px solid #2d313d;
+      border-left: 3px solid #00e5ff;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 22px;
       text-align: left;
       font-size: 12px;
       line-height: 1.5;
       color: #d1d5db;
     }
-    .mode-note strong {
-      color: #ffffff;
+    .logistics-card strong {
+      color: #00e5ff;
       display: block;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
     .btn-return {
       display: block;
       width: 100%;
       background: #c89666;
       color: #0b0c0e;
-      padding: 14px;
+      padding: 13px;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       text-align: center;
       text-decoration: none;
       letter-spacing: 0.02em;
+      box-sizing: border-box;
       transition: opacity 0.15s ease;
     }
     .btn-return:hover {
@@ -149,13 +158,14 @@
       width: 100%;
       margin-top: 10px;
       background: transparent;
-      color: #d1d5db;
+      color: #9ca3af;
       border: 1px solid #3a3f4d;
-      padding: 11px;
+      padding: 10px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
+      box-sizing: border-box;
       transition: border-color 0.15s ease, color 0.15s ease;
     }
     .btn-print:hover {
@@ -167,14 +177,14 @@
 <body>
   <div class="receipt-card">
     <div class="check-icon">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="M20 6L9 17l-5-5"/>
       </svg>
     </div>
     
-    <h1 class="receipt-title">Order Successfully Placed</h1>
+    <h1 class="receipt-title">Order Confirmed & Routed</h1>
     <p class="receipt-desc">
-      Thank you for your order. Your confirmed acquisition has been registered in the archive ledger.
+      Your acquisition has been confirmed and submitted directly to the fulfillment center.
     </p>
 
     <div class="receipt-box">
@@ -183,8 +193,16 @@
         <strong id="displayOrderId" class="receipt-value">#KR-000000</strong>
       </div>
       <div class="receipt-row">
-        <span class="receipt-label">Status:</span>
-        <span class="status-badge">Confirmed / Processing</span>
+        <span class="receipt-label">Customer:</span>
+        <span id="displayCustomer" class="receipt-value">Valued Client</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-label">Destination:</span>
+        <span id="displayDestination" class="receipt-value">Global Destination</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-label">Warehouse Status:</span>
+        <span id="displayStatus" class="status-badge">CHINA HUB DISPATCHED</span>
       </div>
       <div class="total-row">
         <span class="total-label">Total Paid:</span>
@@ -192,27 +210,30 @@
       </div>
     </div>
 
-    <div class="mode-note">
-      <strong>Shopify Integration Status</strong>
-      In live Shopify mode, the customer is routed directly to Shopify Hosted Checkout. In demo mode, this receipt confirms simulated cart processing.
+    <div class="logistics-card">
+      <strong>CJ Dropshipping Fulfillment Engine</strong>
+      <span>Carrier: <strong>CJPacket Sensitive Pro</strong> (5-11 business days). Package dispatched from Shenzhen / Yiwu automated warehouse.</span>
     </div>
 
-    <a href="/" class="btn-return">
-      Return to Storefront
-    </a>
-    <button onclick="window.print()" class="btn-print">
-      Print Receipt
-    </button>
+    <a href="/" class="btn-return">Return to Storefront</a>
+    <button onclick="window.print()" class="btn-print">Print Archive Receipt</button>
   </div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
     const orderId = params.get("orderId") || "KR-" + Math.floor(Math.random() * 900000 + 100000);
-    const total = params.get("total") || "1660.00";
+    const total = params.get("total") || "0.00";
     const currency = params.get("currency") || "USD";
     const symbol = currency === "EUR" ? "€" : "$";
+    const name = params.get("name") || "Valued Client";
+    const address = params.get("address") || "";
+    const city = params.get("city") || "";
+    const cjStatus = params.get("cjStatus") || "PROCESSING_IN_CHINA_WAREHOUSE";
     
     document.getElementById("displayOrderId").textContent = orderId.startsWith("#") ? orderId : "#" + orderId;
+    document.getElementById("displayCustomer").textContent = name;
+    document.getElementById("displayDestination").textContent = (address ? address + ", " + city : "Direct Worldwide Delivery");
+    document.getElementById("displayStatus").textContent = cjStatus.replace(/_/g, " ");
     document.getElementById("displayTotal").textContent = symbol + parseFloat(total).toFixed(2);
   </script>
 </body>

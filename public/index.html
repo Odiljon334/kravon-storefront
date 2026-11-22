@@ -12,11 +12,11 @@
       <a href="/" class="brand-logo">KRAVØN</a>
 
       <nav class="category-nav">
-        <button class="cat-btn active" data-category="All">All Artifacts</button>
-        <button class="cat-btn" data-category="Objects">Objects</button>
-        <button class="cat-btn" data-category="Instruments">Instruments</button>
-        <button class="cat-btn" data-category="Wearables">Wearables</button>
-        <button class="cat-btn" data-category="Curiosities">Curiosities</button>
+        <button class="cat-btn active" data-category="All">All Items</button>
+        <button class="cat-btn" data-category="Cyberpunk Gear">Cyberpunk</button>
+        <button class="cat-btn" data-category="Techwear">Techwear</button>
+        <button class="cat-btn" data-category="Apparel">Apparel</button>
+        <button class="cat-btn" data-category="Artifacts">Artifacts</button>
       </nav>
 
       <div class="nav-actions">
@@ -56,6 +56,37 @@
     </div>
 
     <div id="drawerItems" class="drawer-items"></div>
+
+    <div id="checkoutFormSection" class="checkout-form-section">
+      <div class="form-header-badge">DESTINATION · YETKAZIB BERISH MANZILI</div>
+      <div class="input-grid">
+        <input type="text" id="custName" class="form-field" placeholder="To'liq ism (Full Name)*" required>
+        <input type="email" id="custEmail" class="form-field" placeholder="Email pochta*" required>
+        <input type="text" id="custPhone" class="form-field" placeholder="Telefon raqami*" required>
+        <select id="custCountry" class="form-field">
+          <option value="US">United States (AQSH)</option>
+          <option value="GB">United Kingdom (Buyuk Britaniya)</option>
+          <option value="DE">Germany (Germaniya)</option>
+          <option value="FR">France (Fransiya)</option>
+          <option value="CH">Switzerland (Shveysariya)</option>
+          <option value="UZ">Uzbekistan (O'zbekiston)</option>
+          <option value="AE">UAE / Dubai (BAA)</option>
+        </select>
+        <input type="text" id="custAddress" class="form-field full-width" placeholder="Ko'cha va uy manzili (Street Address)*" required>
+        <input type="text" id="custCity" class="form-field" placeholder="Shahar (City)*" required>
+        <input type="text" id="custProvince" class="form-field" placeholder="Viloyat / Shtat (State/Province)*" required>
+        <input type="text" id="custZip" class="form-field" placeholder="Pochta indeksi (Postal Code)*" required>
+      </div>
+
+      <div class="form-header-badge" style="margin-top: 14px;">PAYMENT · KARTA TO'LOVI</div>
+      <div class="card-input-box">
+        <input type="text" id="cardNumber" class="form-field full-width" placeholder="Karta raqami: 4000 1234 5678 9010" maxlength="19">
+        <div class="sub-row">
+          <input type="text" id="cardExpiry" class="form-field" placeholder="MM / YY" maxlength="5">
+          <input type="text" id="cardCvc" class="form-field" placeholder="CVC" maxlength="4">
+        </div>
+      </div>
+    </div>
 
     <div class="drawer-footer">
       <div class="coupon-row">
