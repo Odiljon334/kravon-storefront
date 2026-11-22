@@ -234,9 +234,9 @@ async function createCJDropshippingOrder(orderInfo) {
     return {
       success: false,
       mode: "fallback_simulation",
-      trackingNumber: `CJ-CN-${Math.floor(Math.random() * 8999999 + 1000000)}YQ`,
-      carrier: "CJPacket Sensitive Pro",
-      status: "DISPATCHED_TO_HANGZHOU_HUB",
+      trackingNumber: `CJ-TEST-${Math.floor(Math.random() * 8999999 + 1000000)}YQ`,
+      carrier: "CJPacket Sensitive Pro (Sandbox Mode)",
+      status: "SIMULATED_TEST_ROUTING",
       message: "CJ Token standby"
     };
   }
@@ -275,7 +275,7 @@ async function createCJDropshippingOrder(orderInfo) {
         success: true,
         mode: "live_cj_open_api",
         cjOrderId: res.data,
-        trackingNumber: `CJ-CN-${Math.floor(Math.random() * 8999999 + 1000000)}YQ`,
+        trackingNumber: null,
         carrier: "CJPacket Sensitive Pro",
         logisticName: "CJPacket Sensitive Pro",
         status: "PROCESSING_IN_CHINA_WAREHOUSE",
@@ -286,18 +286,18 @@ async function createCJDropshippingOrder(orderInfo) {
       success: false,
       mode: "api_fallback",
       error: res.message,
-      trackingNumber: `CJ-CN-${Math.floor(Math.random() * 8999999 + 1000000)}YQ`,
+      trackingNumber: null,
       carrier: "CJPacket Sensitive Pro",
-      status: "DISPATCHED_TO_HANGZHOU_HUB"
+      status: "AWAITING_CARRIER_ASSIGNMENT"
     };
   } catch (err) {
     return {
       success: false,
       mode: "error_fallback",
       error: err.message,
-      trackingNumber: `CJ-CN-${Math.floor(Math.random() * 8999999 + 1000000)}YQ`,
+      trackingNumber: null,
       carrier: "CJPacket Sensitive Pro",
-      status: "DISPATCHED_TO_HANGZHOU_HUB"
+      status: "AWAITING_CARRIER_ASSIGNMENT"
     };
   }
 }
@@ -451,6 +451,53 @@ app.get("/api/2checkout/config", (req, res) => {
   });
 });
 
+app.post("/api/payment/create-session", (req, res) => {
+  const { orderId } = req.body || {};
+  if (!orderId) {
+    return res.status(400).json({ success: false, error: "Missing orderId parameter" });
+  }
+
+  const order = getOrderById(orderId);
+  if (!order) {
+    return res.status(404).json({ success: false, error: "Order not found" });
+  }
+
+  if (order.paymentStatus === "PAID") {
+    return res.json({
+      success: true,
+      alreadyPaid: true,
+      redirectUrl: `/checkout-success.html?orderId=${encodeURIComponent(orderId)}`
+    });
+  }
+
+  if (TWOCHECKOUT_SELLER_ID) {
+    const params = new URLSearchParams({
+      merchant: TWOCHECKOUT_SELLER_ID,
+      prod: order.items[0]?.title || "KRAVØN Artifact",
+      price: order.totalAmount.toFixed(2),
+      currency: order.currency,
+      qty: "1",
+      type: "PRODUCT",
+      tangible: "1",
+      refnoext: order.orderId,
+      "return-type": "redirect",
+      "return-url": `https://kravon-archive.com/checkout-success.html?orderId=${encodeURIComponent(order.orderId)}`
+    });
+    return res.json({
+      success: true,
+      mode: "LIVE_2CHECKOUT_HOSTED",
+      checkoutUrl: `https://secure.2checkout.com/checkout/buy?${params.toString()}`
+    });
+  }
+
+  res.json({
+    success: true,
+    mode: "SANDBOX_DEMO",
+    message: "Verifone underwriting approval pending. Sandbox test pipeline active.",
+    testOrderId: order.orderId
+  });
+});
+
 app.post("/api/2checkout/webhook", async (req, res) => {
   if (!verifyWebhookAuth(req)) {
     return res.status(401).json({
@@ -470,6 +517,25 @@ app.post("/api/2checkout/webhook", async (req, res) => {
   const existing = getOrderById(orderId);
   if (!existing) {
     return res.status(404).json({ success: false, error: "Order not found" });
+  }
+
+  const reportedAmount = parseFloat(payload.IPN_TOTALGENERAL || payload.total || payload.amount || 0);
+  if (reportedAmount > 0) {
+    const diff = Math.abs(reportedAmount - existing.totalAmount);
+    if (diff > 0.05) {
+      return res.status(400).json({
+        success: false,
+        error: `Payment amount mismatch: expected ${existing.totalAmount}, got ${reportedAmount}`
+      });
+    }
+  }
+
+  const reportedCurrency = (payload.CURRENCY || payload.currency || existing.currency).toUpperCase();
+  if (reportedCurrency !== existing.currency.toUpperCase()) {
+    return res.status(400).json({
+      success: false,
+      error: `Currency mismatch: expected ${existing.currency}, got ${reportedCurrency}`
+    });
   }
 
   if (status === "COMPLETE" || status === "AUTHAPPROVED" || status === "PAID") {
@@ -511,7 +577,14 @@ app.post("/api/2checkout/webhook", async (req, res) => {
 });
 
 app.post("/api/payment/simulate", async (req, res) => {
-  const { orderId, paymentMethod = "CREDIT_CARD" } = req.body;
+  if (TWOCHECKOUT_MODE !== "SANDBOX" && process.env.NODE_ENV !== "test" && process.env.NODE_ENV !== "development") {
+    return res.status(403).json({
+      success: false,
+      error: "Forbidden: Simulation endpoint disabled in live production mode."
+    });
+  }
+
+  const { orderId, paymentMethod = "SANDBOX_TEST" } = req.body || {};
   if (!orderId) {
     return res.status(400).json({ success: false, error: "Missing orderId parameter" });
   }
@@ -544,7 +617,7 @@ app.post("/api/payment/simulate", async (req, res) => {
 
   res.json({
     success: true,
-    message: "Payment authorized and routed to fulfillment hub",
+    message: "Sandbox test payment authorized and routed to staging hub",
     orderId,
     paymentMethod,
     fulfillment: cjFulfillment,
@@ -587,7 +660,7 @@ app.get("/api/track", (req, res) => {
       completed: isPaid && Boolean(trackingNumber),
       active: isPaid && !trackingNumber,
       label: "Automated Fulfillment Packaging",
-      desc: isPaid ? `Consignment scheduled with ${carrier}.` : "Queued behind payment clearance."
+      desc: isPaid ? (trackingNumber ? `Consignment scheduled with ${carrier}.` : "Queued in automated logistics hub.") : "Queued behind payment clearance."
     },
     {
       step: "AIR_TRANSIT",

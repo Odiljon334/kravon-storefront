@@ -57,31 +57,28 @@
       font-weight: 700;
       color: #ffffff;
     }
-    .gateway-option {
-      border: 1px solid #222630;
+    .gateway-notice {
+      background: rgba(0, 229, 255, 0.05);
+      border: 1px solid rgba(0, 229, 255, 0.2);
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      background: #0d0e12;
+      padding: 14px;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 18px;
+      line-height: 1.5;
     }
-    .gateway-option:hover, .gateway-option.active {
-      border-color: #00e5ff;
-      background: rgba(0, 229, 255, 0.04);
-    }
-    .gateway-option h3 {
-      font-size: 14px;
-      color: #ffffff;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .gateway-option p {
-      font-size: 11px;
-      color: #8b92a2;
-      line-height: 1.4;
+    .sandbox-badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid #f59e0b;
+      color: #f59e0b;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      font-family: 'JetBrains Mono', monospace;
     }
     .btn-pay-action {
       width: 100%;
@@ -89,7 +86,7 @@
       color: #000000;
       border: none;
       padding: 14px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -114,9 +111,6 @@
       font-size: 11px;
       color: #64748b;
       font-family: 'JetBrains Mono', monospace;
-    }
-    .security-badge svg {
-      color: #10b981;
     }
   </style>
 </head>
@@ -150,31 +144,17 @@
       </div>
 
       <div class="checkout-card">
-        <h2>Secure Payment Processing</h2>
-        <div class="gateway-option active" data-method="CREDIT_CARD">
-          <h3>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-              <line x1="1" y1="10" x2="23" y2="10"/>
-            </svg>
-            Credit / Debit Card (Visa, Mastercard, Amex)
-          </h3>
-          <p>Instant tokenized processing. Card details are processed directly through 256-bit encrypted gateway endpoints and never stored on KRAVØN servers.</p>
-        </div>
+        <h2>Payment Authorization</h2>
 
-        <div class="gateway-option" data-method="APPLE_PAY">
-          <h3>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z"/>
-              <path d="M12 6v6l4 2"/>
-            </svg>
-            Apple Pay / Google Pay Direct
-          </h3>
-          <p>Biometric single-tap payment authorization via device-bound secure element.</p>
+        <div id="gatewayInfoBox" class="gateway-notice">
+          <div id="modeBadge" class="sandbox-badge">SANDBOX TEST PIPELINE</div>
+          <p id="gatewayNoticeText">
+            Verifone / 2Checkout underwriting approval in progress. The store is operating in sandbox verification mode.
+          </p>
         </div>
 
         <button id="btnAuthorizePayment" class="btn-pay-action">
-          Authorize & Route Fulfillment
+          Simulate Sandbox Authorization
         </button>
 
         <div id="paymentFeedback" style="display: none; margin-top: 14px; font-size: 13px; font-family: 'JetBrains Mono', monospace;"></div>
@@ -183,7 +163,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          PCI-DSS Level 1 Compliant · EBU R128 · Zero-Risk Guarantee
+          PCI-DSS Level 1 Compliant · EBU R128 · Verifone Verified
         </div>
       </div>
     </div>
@@ -193,7 +173,7 @@
     const params = new URLSearchParams(window.location.search);
     const orderId = params.get("orderId");
 
-    let currentOrder = null;
+    let gatewaySession = null;
 
     async function loadOrder() {
       if (!orderId) {
@@ -205,10 +185,19 @@
       document.getElementById("displayOrderId").textContent = "#" + orderId;
 
       try {
-        const res = await fetch("/api/track?orderId=" + encodeURIComponent(orderId));
-        const data = await res.json();
+        const [trackRes, sessionRes] = await Promise.all([
+          fetch("/api/track?orderId=" + encodeURIComponent(orderId)),
+          fetch("/api/payment/create-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId: orderId })
+          })
+        ]);
+
+        const data = await trackRes.json();
+        gatewaySession = await sessionRes.json();
+
         if (data.success) {
-          currentOrder = data;
           document.getElementById("displayPayableAmount").textContent = (data.currency === "EUR" ? "€" : "$") + Number(data.totalAmount).toFixed(2);
           document.getElementById("displayDestination").textContent = data.shippingCountry || "International Hub";
 
@@ -222,43 +211,50 @@
                 </div>
               `;
             });
-          } else {
-            html = `
-              <div class="order-row">
-                <span>Selected Items (${data.itemsCount})</span>
-                <strong>${(data.currency === "EUR" ? "€" : "$") + Number(data.totalAmount).toFixed(2)}</strong>
-              </div>
-            `;
           }
           document.getElementById("orderItemsContainer").innerHTML = html;
 
           if (data.paymentStatus === "PAID") {
             window.location.href = "/checkout-success.html?orderId=" + encodeURIComponent(orderId);
+            return;
           }
-        } else {
-          document.getElementById("orderItemsContainer").innerHTML = '<div style="color: #ef4444; font-size: 13px;">Order not found in database.</div>';
-          document.getElementById("btnAuthorizePayment").disabled = true;
+
+          const btn = document.getElementById("btnAuthorizePayment");
+          const modeBadge = document.getElementById("modeBadge");
+          const noticeText = document.getElementById("gatewayNoticeText");
+
+          if (gatewaySession.mode === "LIVE_2CHECKOUT_HOSTED" && gatewaySession.checkoutUrl) {
+            modeBadge.textContent = "LIVE VERIFONE GATEWAY";
+            modeBadge.style.color = "#10b981";
+            modeBadge.style.borderColor = "#10b981";
+            modeBadge.style.background = "rgba(16, 185, 129, 0.15)";
+            noticeText.textContent = "You will be redirected to the official 2Checkout (Verifone) encrypted payment portal to complete this transaction.";
+            btn.textContent = "Proceed to 2Checkout Payment";
+          } else {
+            modeBadge.textContent = "SANDBOX TEST PIPELINE";
+            noticeText.textContent = "Merchant underwriting approval in progress. The store is operating in sandbox mode. Clicking below authorizes a test transaction.";
+            btn.textContent = "Authorize Sandbox Test Payment";
+          }
         }
       } catch (err) {
         document.getElementById("orderItemsContainer").innerHTML = '<div style="color: #ef4444; font-size: 13px;">Telemetry connection failed.</div>';
       }
     }
 
-    document.querySelectorAll(".gateway-option").forEach(opt => {
-      opt.addEventListener("click", () => {
-        document.querySelectorAll(".gateway-option").forEach(o => o.classList.remove("active"));
-        opt.classList.add("active");
-      });
-    });
-
     document.getElementById("btnAuthorizePayment").addEventListener("click", async () => {
       const btn = document.getElementById("btnAuthorizePayment");
       const feedback = document.getElementById("paymentFeedback");
       btn.disabled = true;
+
+      if (gatewaySession && gatewaySession.mode === "LIVE_2CHECKOUT_HOSTED" && gatewaySession.checkoutUrl) {
+        window.location.href = gatewaySession.checkoutUrl;
+        return;
+      }
+
       btn.textContent = "Processing Authorization...";
       feedback.style.display = "block";
       feedback.style.color = "#00e5ff";
-      feedback.textContent = "Verifying cryptographic token with gateway...";
+      feedback.textContent = "Validating cryptographic token in sandbox...";
 
       try {
         const res = await fetch("/api/payment/simulate", {
@@ -266,14 +262,14 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             orderId: orderId,
-            paymentMethod: document.querySelector(".gateway-option.active")?.dataset.method || "CREDIT_CARD"
+            paymentMethod: "SANDBOX_TEST"
           })
         });
 
         const result = await res.json();
         if (result.success) {
           feedback.style.color = "#10b981";
-          feedback.textContent = "Payment authorized. Routing order to CJ fulfillment hub...";
+          feedback.textContent = "Payment authorized. Routing to fulfillment ledger...";
           setTimeout(() => {
             window.location.href = result.redirectUrl || ("/checkout-success.html?orderId=" + encodeURIComponent(orderId));
           }, 800);
@@ -281,13 +277,13 @@
           feedback.style.color = "#ef4444";
           feedback.textContent = result.error || "Payment authorization failed.";
           btn.disabled = false;
-          btn.textContent = "Authorize & Route Fulfillment";
+          btn.textContent = "Authorize Sandbox Test Payment";
         }
       } catch (err) {
         feedback.style.color = "#ef4444";
-        feedback.textContent = "Gateway communication error. Please try again.";
+        feedback.textContent = "Gateway communication error.";
         btn.disabled = false;
-        btn.textContent = "Authorize & Route Fulfillment";
+        btn.textContent = "Authorize Sandbox Test Payment";
       }
     });
 

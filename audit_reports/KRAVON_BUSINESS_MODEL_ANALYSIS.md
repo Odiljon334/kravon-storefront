@@ -16,15 +16,18 @@ While **Gross Margin** is indeed 79.2%, **Net Margin** is drastically lower in r
 
 | Cost Component | Dollar Value ($) | % of Revenue | Reality & Evidence |
 | :--- | :--- | :--- | :--- |
-| **Retail Selling Price (Gross Revenue)** | **$118.00** | 100.0% | Customer checkout price (Free shipping tier) |
-| **COGS (Factory Product Cost)** | -$24.50 | 20.8% | CJ Dropshipping / 1688 base price |
-| **International Freight (Sensitive Battery Air)** | -$14.20 | 12.0% | CJPacket Sensitive (0.35kg volumetric + battery surcharge) |
-| **Payment Gateway Processing Fee (2Checkout)** | -$7.08 | 6.0% | 3.5% + $0.35 base + 2.5% cross-border FX markup |
-| **Rolling Reserve Holdback (10% for 120 days)** | -$11.80 | 10.0% | Cash withheld by processor against chargebacks |
-| **Estimated Paid Customer Acquisition Cost (CAC)** | -$42.00 | 35.6% | Cold Meta / TikTok Ads CPA for $100+ fashion goods |
-| **Return, Defect & Lost Parcel Provision (5%)** | -$5.90 | 5.0% | Industry average for overseas electronics/props |
-| **Net Pre-Tax Cash Flow per Unit** | **+$12.52** | **10.6%** | **Actual immediate liquid cash received** |
-| **Net Profit (After Reserve Release)** | **+$24.32** | **20.6%** | **True Net Margin after 120-day reserve settlement** |
+| **Retail Selling Price (Gross Revenue)** | **$118.00** | 100.0% | Customer checkout price (Free priority air shipping) |
+| **COGS (Factory Product Cost)** | -$24.50 | 20.8% | CJ Dropshipping verified base supplier cost |
+| **International Air Freight (Sensitive Battery Air)** | -$14.20 | 12.0% | CJPacket Sensitive (0.35kg volumetric + battery line) |
+| **Payment Gateway Processing Fee (2Checkout)** | -$7.43 | 6.3% | 3.5% + $0.35 base + 2.5% cross-border FX fee ($7.43 total) |
+| **Customs, Returns & Defect Provision (4.7%)** | -$5.55 | 4.7% | 2026 customs entry buffer, return & damage reserve |
+| **Pre-Ad Contribution Margin (CM1)** | **+$66.32** | **56.2%** | **Dollar margin available before advertising spend** |
+| **Estimated Paid Customer Acquisition Cost (CAC)** | -$42.00 | 35.6% | Realistic Meta / TikTok CPA for $100+ fashion goods |
+| **Post-Ad Contribution Margin (CM2)** | **+$24.32** | **20.6%** | **Operating contribution after paid marketing** |
+| **Rolling Reserve Holdback (10% for 120 days)** | -$11.80 | 10.0% | Cash withheld by 2Checkout against chargeback risk |
+| **Initial Liquid Pre-Tax Cash Flow** | **+$12.52** | **10.6%** | **Actual immediate cash flow cleared prior to reserve release** |
+
+> **2026 Tariff & Customs Impact Notice:** Under 2026 presidential orders suspending US Section 321 duty-free de minimis treatment across all countries and the European Commission's temporary €3 customs flat fee (effective July 1, 2026), international dropshippers can no longer assume zero-friction border entry. Consignments must be shipped DDP (Delivered Duty Paid) via integrated carrier lines to prevent delivery rejections.
 
 ---
 
@@ -34,8 +37,8 @@ While **Gross Margin** is indeed 79.2%, **Net Margin** is drastically lower in r
 1. **Average Order Value (AOV):** Projected at **$104.50** (Weighted across Mask $118, Jacket $89, Dagger $54, Hoodie $44).
 2. **Gross Margin:**
    $$\text{Gross Margin} = \frac{\text{Revenue} - \text{COGS}}{\text{Revenue}} = \frac{118.00 - 24.50}{118.00} = 79.2\%$$
-3. **Contribution Margin (Margin after variable fulfillment & gateway fees):**
-   $$\text{Contribution Margin} = \frac{118.00 - (24.50 + 14.20 + 7.08 + 5.90)}{118.00} = \frac{66.32}{118.00} = 56.2\%$$
+3. **Contribution Margin (Margin after variable fulfillment, gateway fees & customs reserve):**
+   $$\text{Contribution Margin} = \frac{118.00 - (24.50 + 14.20 + 7.43 + 5.55)}{118.00} = \frac{66.32}{118.00} = 56.2\%$$
 4. **Break-Even CAC (Maximum Ad Spend allowable per order):**
    $$\text{Break-Even CAC} = \text{Contribution Margin in Dollars} = \$66.32$$
    - If ad spend to acquire one customer exceeds **$66.32**, every sale loses real cash.
@@ -43,6 +46,7 @@ While **Gross Margin** is indeed 79.2%, **Net Margin** is drastically lower in r
 5. **Break-Even ROAS (Return On Ad Spend):**
    $$\text{Break-Even ROAS} = \frac{\text{AOV}}{\text{Contribution Margin}} = \frac{118.00}{66.32} = \mathbf{1.78\text{x}}$$
    - Paid ad campaigns must achieve at least **1.78x ROAS** to prevent losses.
+   - Recommended target ROAS: **2.50x – 3.20x**.
    - Recommended target ROAS: **2.50x – 3.20x**.
 
 ---

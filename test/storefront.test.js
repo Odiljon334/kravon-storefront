@@ -406,4 +406,70 @@ describe("Kravon Production Storefront & Security Suite", () => {
     const html = await res.text();
     assert.match(html, /Void Coordinate Sequence/);
   });
+
+  test("POST /api/payment/create-session returns gateway status and session details", async () => {
+    const checkoutRes = await fetch(`${baseUrl}/api/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: [
+          { id: "prod_anime_1", variantId: "var_mask_cyan", quantity: 1 }
+        ],
+        customerName: "Session Client",
+        customerEmail: "session@kravon.com",
+        shippingAddress: "100 Broadway",
+        shippingCity: "New York",
+        shippingZip: "10005",
+        shippingCountryCode: "US"
+      })
+    });
+    const { orderId } = await checkoutRes.json();
+
+    const sessionRes = await fetch(`${baseUrl}/api/payment/create-session`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId })
+    });
+    assert.equal(sessionRes.status, 200);
+    const sessionData = await sessionRes.json();
+    assert.equal(sessionData.success, true);
+    assert.ok(sessionData.mode);
+  });
+
+  test("POST /api/2checkout/webhook rejects amount or currency mismatch", async () => {
+    const webhookSecret = process.env.WEBHOOK_SECRET || "kravon_secure_webhook_secret_2026";
+    const checkoutRes = await fetch(`${baseUrl}/api/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: [
+          { id: "prod_anime_1", variantId: "var_mask_cyan", quantity: 1 }
+        ],
+        customerName: "Mismatch Client",
+        customerEmail: "mismatch@kravon.com",
+        shippingAddress: "100 Broadway",
+        shippingCity: "New York",
+        shippingZip: "10005",
+        shippingCountryCode: "US"
+      })
+    });
+    const { orderId } = await checkoutRes.json();
+
+    const badAmountRes = await fetch(`${baseUrl}/api/2checkout/webhook`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-webhook-secret": webhookSecret
+      },
+      body: JSON.stringify({
+        orderId,
+        status: "COMPLETE",
+        total: 1.00,
+        currency: "USD"
+      })
+    });
+    assert.equal(badAmountRes.status, 400);
+    const badAmountData = await badAmountRes.json();
+    assert.match(badAmountData.error, /Payment amount mismatch/);
+  });
 });

@@ -1,36 +1,27 @@
-# KRAVØN Production Hardening & Full Elevation Plan (V3.0)
+# KRAVØN Production Elevation & Audit Alignment (V3.1)
 
-- [x] 1. Database Architecture & Atomic Transactions (`db.js`):
-  - Add `subscribers` table for newsletter email persistence
-  - Wrap `saveOrder` in atomic database transactions (`BEGIN TRANSACTION` / `COMMIT` / `ROLLBACK`)
-  - Add `updateOrderStatus` to save tracking number, carrier and fulfillment metadata
-  - Add helper functions `saveSubscriber` and `getSubscribers`
-  - Enforce Zero-Comment Rule in `db.js`
-- [x] 2. Backend Logic, Validation Authority & Payment Decoupling (`server.js`):
-  - Enforce server catalog authority: reject unknown products/variants (HTTP 400), compute all prices and discounts on server
-  - Decouple CJ fulfillment from checkout creation: checkout creates order as `PENDING_PAYMENT` & `UNFULFILLED` (no premature dropshipping dispatch)
-  - Implement HMAC-SHA256 signature verification and token authentication for `/api/2checkout/webhook`
-  - Implement idempotent payment confirmation workflow that triggers CJ dispatch ONLY upon verified payment
-  - Add sandbox payment simulation endpoint `/api/payment/simulate` for test mode
-  - Add `/api/track` order lookup endpoint returning real-time status and masking PII
-  - Add `/api/newsletter` subscriber endpoint with regex validation and SQLite persistence
-  - Fix postal code mapping in CJ payload (`shippingZip: orderInfo.shippingZip || orderInfo.zip`)
-  - Implement dedicated routes: `/products/:handle`, `/tracking`, `/faq`, `/checkout.html`, and stylized 404 handler
-  - Update `/sitemap.xml` to include all dedicated product URLs, `/tracking`, and `/faq`
-  - Enforce Zero-Comment Rule in `server.js`
-- [x] 3. Frontend Pages & UX Elevation (`public/`):
-  - Build `public/checkout.html`: dedicated payment gateway portal displaying order breakdown, security badges, and payment simulation/gateway redirect
-  - Build `public/tracking.html`: live order telemetry and carrier tracking interface
-  - Build `public/faq.html`: comprehensive atelier FAQ (shipping windows, EU 14-day statutory return rights, materials, customs)
-  - Build `public/404.html`: cyberpunk dark void 404 page
-  - Update `public/checkout-success.html`: real-time order status check (displays "Payment Pending" if unpaid, "Confirmed & Routed" only if paid)
-  - Update `public/app.js`: wire newsletter form to `/api/newsletter`, route checkout to `/checkout.html`, remove artificial claims
-  - Enforce Zero-Comment Rule in `public/app.js` and all frontend files
-- [x] 4. Comprehensive Test Suite Expansion (`test/storefront.test.js`):
-  - Expand test suite to cover catalog validation, atomic orders, payment lifecycle, webhook HMAC, order tracking, and routing (21/21 passing)
-  - Verify 100% tests pass in Node.js test runner
-  - Run Chrome DevTools CDP verification across viewports
-  - Run ruthless zero-comment audit across all code files (100% clean)
-- [x] 5. Git Commit & GitHub Push:
-  - Commit all hardened and elevated files to `main` branch
-  - Push cleanly to `https://github.com/Odiljon334/kravon-storefront`
+- [x] 1. Gateway Reality & Sandbox Transparency (`server.js` & `public/checkout.html`):
+  - Add live 2Checkout hosted checkout redirect generation (`POST /api/payment/create-session` or direct buy link)
+  - Gate `/api/payment/simulate` strictly to sandbox/test environments (`NODE_ENV === 'test'` or `TWOCHECKOUT_MODE === 'SANDBOX'`)
+  - Update `public/checkout.html` to clearly distinguish between Live Gateway Mode and Sandbox Demo Mode (no deceptive card simulation)
+  - Enforce strict amount and currency validation in `/api/2checkout/webhook` (reject underpayment/currency mismatch)
+  - Fix CJ fulfillment tracking handling (do not fabricate random tracking numbers on live orders; mark `AWAITING_CARRIER_ASSIGNMENT`)
+  - Enforce Zero-Comment Rule across `server.js` and frontend
+- [x] 2. Update All 10 Audit Dossiers (`audit_reports/`):
+  - `KRAVON_EXECUTIVE_SUMMARY.md`: Update to V3.1 architecture, 23 automated tests, honest gateway readiness, updated 2026 tariff status
+  - `KRAVON_BUSINESS_MODEL_ANALYSIS.md`: Update P&L with 2026 US de minimis suspension, EU €3 flat fee, real contribution ($66.32 pre-ad / $24.32 post-ad), break-even ROAS 1.78x
+  - `KRAVON_TECHNICAL_AUDIT.md`: Document current architecture (Node.js 24, SQLite ACID, atomic transactions, decoupled payment/fulfillment, rate limiting, dedicated routes, 23/23 tests)
+  - `KRAVON_UI_UX_AUDIT.md`: Document dedicated product pages, live tracking UI, atelier FAQ, 404 handler, mobile 390px zero-overflow
+  - `KRAVON_CONTENT_AUDIT.md`: Inventory all copywriting, removal of AI-slop, replacement of fake reviews with Atelier Score
+  - `KRAVON_PAYMENT_AUDIT.md`: Document Payoneer receiving vs 2Checkout Verifone underwriting reality, reserve requirements, HMAC-SHA256 webhook verification, amount validation
+  - `KRAVON_LOGISTICS_AUDIT.md`: Document CJ API integration, order lifecycle (`UNFULFILLED` -> `CONFIRMED_AND_ROUTED` -> `PROCESSING_IN_CHINA_WAREHOUSE`), address mapping, carrier tracking
+  - `KRAVON_SECURITY_AUDIT.md`: Detail CSP, HSTS, timing-safe webhook verification, secret sanitation (no default production secrets), atomic DB rollback
+  - `KRAVON_MARKETING_STRATEGY.md`: Update realistic customer acquisition metrics, channel conversion estimates, and content calendar
+  - `KRAVON_MASTER_FIX_ROADMAP.md`: Update all issue statuses with exact commit references and verification commands
+- [x] 3. Run Verification Suite & Zero-Comment Audit:
+  - Run full automated test suite `NODE_ENV=test node --test test/storefront.test.js` (23/23 tests pass)
+  - Verify Zero-Comment Rule across all code files (100% clean)
+  - Verify live server on port 3000 and Cloudflare tunnel
+- [x] 4. Commit and Push to GitHub:
+  - Stage all code and updated audit dossiers
+  - Commit cleanly and push to `origin/main`

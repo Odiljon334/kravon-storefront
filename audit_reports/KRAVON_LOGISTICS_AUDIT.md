@@ -42,9 +42,11 @@ This reframes the wait time as deliberate quality control rather than slow posta
 
 ## 3. CUSTOMS, VAT & IMPORT TAXES
 
-1. **United States (The E-Commerce Sweet Spot):**
-   - **Section 321 De Minimis:** Shipments valued under **$800.00 USD** per recipient per day enter the US completely duty-free and tax-free. All KRAVØN items ($44 to $118) pass directly through US customs with zero tariff friction.
-2. **European Union (EU IOSS Rules):**
-   - Since July 2021, the EU €22 tax exemption was abolished. All commercial goods imported into the EU are subject to VAT (typically 19%–21%).
-   - If KRAVØN does not collect VAT at checkout under an IOSS registration number, European customers will receive a postal notice requiring them to pay 20% VAT + a €6 courier collection fee before delivery.
-   - *Fix:* Ensure CJ Dropshipping's consolidated IOSS option is checked in order payloads to pre-clear European VAT.
+1. **United States (2026 Regulatory Environment):**
+   - **De Minimis Suspension Reality:** Under recent 2026 presidential actions, the historic blanket Section 321 duty-free de minimis treatment ($800 exemption) for commercial low-value imports has been suspended across all origin countries.
+   - Low-value consumer shipments from Chinese hubs are now subject to electronic entry documentation, customs security screening, and applicable HTS classification tariffs.
+   - *Operational Mandate:* KRAVØN must route all US consignments via CJ's Delivered Duty Paid (DDP) specialized air lines (e.g. CJPacket Sensitive Pro DDP) and budget a $3.50–$6.00 regulatory duty buffer per unit to prevent customs holds at JFK/LAX cargo hubs.
+2. **European Union (2026 Customs Directives & €3 Flat Fee):**
+   - Beyond mandatory standard VAT (19%–21%) collected via IOSS, European Commission customs directives establish a temporary flat customs fee of €3 per low-value consignment effective July 1, 2026 (applicable until July 1, 2028).
+   - If shipped without IOSS/DDP registration, European buyers face doorstep courier handling surcharges (€6–€10) plus VAT, triggering massive return rates.
+   - *Operational Mandate:* Consolidate European fulfillment under CJ Dropshipping's validated IOSS intermediary pipeline with EU statutory 14-day cancellation compliance.

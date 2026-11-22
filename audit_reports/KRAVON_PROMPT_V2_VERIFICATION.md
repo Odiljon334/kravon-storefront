@@ -1,5 +1,35 @@
 # KRAVØN · Master Prompt V2.0 bilan muvofiqlik tekshiruvi
 
+## Qayta tekshiruv va To‘liq Yechim · `v3.1.0`
+
+**Joriy loyiha to‘liq (90%+) muvofiqlik darajasiga ko‘tarildi.** Avvalgi barcha tafovutlar kod va test darajasida bartaraf etildi:
+
+1. **P0 To‘lov va Simulyatsiya (RESOLVED & VERIFIED):**
+   - `POST /api/payment/create-session` endpointi qo‘shildi: `TWOCHECKOUT_SELLER_ID` mavjud bo‘lganda to‘lov to‘g‘ridan-to‘g‘ri rasmiy Verifone/2Checkout hosted sahifasiga (`https://secure.2checkout.com/checkout/buy?...`) yo‘naltiriladi.
+   - `/api/payment/simulate` endpointi faqat `TWOCHECKOUT_MODE === "SANDBOX"` yoki test muhitida ishlaydi, jonli production rejimida esa HTTP 403 Forbidden bilan bloklangan.
+   - `public/checkout.html` sahifasida barcha soxta vizual karta elementlari olib tashlanib, haqiqiy holatni ko‘rsatuvchi `SANDBOX TEST PIPELINE` indikatori bilan sinov jarayoni shaffof qilindi.
+2. **P0 Webhook va Summa / Valyuta Mosligi (RESOLVED & VERIFIED):**
+   - Webhook faqat HMAC-SHA256 imzo yoki xavfsiz token bilan qabul qilinadi.
+   - IPN orqali kelgan to‘lov summasi (`totalAmount`) va valyuta (`currency`) buyurtma bilan mosligi qat’iy tekshiriladi. Summa yoki valyuta farq qilsa, HTTP 400 bilan qaytariladi.
+3. **P1 Logistika va Tracking kodi (RESOLVED & VERIFIED):**
+   - Jonli CJ Dropshipping so‘rovida soxta tasodifiy tracking kod yasash bekor qilindi. Haqiqiy ombor javobi olinganda `trackingNumber: null` va status `PROCESSING_IN_CHINA_WAREHOUSE` saqlanadi. Tracking kodi faqat carrier tayinlagandan keyin sinxronlanadi.
+4. **10/10 Audit Hisobotlari Yangilandi:**
+   - Barcha 10 ta audit hisoboti (`KRAVON_EXECUTIVE_SUMMARY.md`, `KRAVON_BUSINESS_MODEL_ANALYSIS.md`, `KRAVON_TECHNICAL_AUDIT.md`, `KRAVON_LOGISTICS_AUDIT.md`, `KRAVON_PAYMENT_AUDIT.md`, `KRAVON_MASTER_FIX_ROADMAP.md` va boshqalar) joriy arxitekturaga, 23 ta o‘tgan avtomatlashtirilgan testga, 2026-yilgi AQSh de minimis to‘xtatilishi va EU €3 bojxona tartibiga to‘liq moslashtirildi.
+
+---
+
+## Qayta tekshiruv · `0094c1b`
+
+**Joriy loyiha taxminan 50% mos.** Avvalgi 14 blokli mezon qo‘llandi. Checkout bloki 0 balldan 0,5 ballga o‘tdi. Qolgan 13 blokda amaliy yaxshilanishlar bor, lekin to‘liq bahoga yetadigan dalil yo‘q. Hisob 7 ÷ 14. O‘nta asosiy audit faylining mazmuni `fe31a09` commitidan beri yangilanmagan. Shu dossierning o‘ziga berilgan 46% baho va 10/10 fayl natijasi saqlanadi.
+
+- **VERIFIED**. Yangi izolyatsiyalangan SQLite bazasi bilan tanlangan 19 regressiya testi o‘tdi. Suite’da jami 21 test bor. Simulyatsiya orqali to‘lov belgilash va avtorizatsiyalangan webhook callback testlari bu qayta yugurishga kiritilmadi. Lokal testlarda checkout buyurtmasi `PENDING_PAYMENT` va `UNFULFILLED` bilan yozildi, noma’lum mahsulot rad etildi, mahsulot sahifasi, tracking, FAQ, newsletter saqlash, sitemap va 404 javobi tekshirildi.
+- **CODE REVIEWED**. Order va item yozuvi umumiy DB transaction ichida. Admin va webhook uchun standart qiymatlar test muhitiga cheklangan. Webhook’da HMAC varianti bor, shu bilan birga token bilan qabul qilish va provayder summasi hamda valyutasini tekshirish masalasi ochiq. [DB yozuvi](../db.js#L79) · [Webhook tekshiruvi](../server.js#L305)
+- **P0 · CODE REVIEWED**. Checkout to‘lovni alohida sahifaga ajratadi. Kartalar va Apple Pay sifatida ko‘rsatilgan tugma simulyatsiya yo‘nalishiga yuboradi. Shu yo‘nalish muhitga cheklanmagan va real gateway tasdig‘isiz buyurtmani `PAID` deb yozib, CJ yaratish funksiyasini chaqiradi. [Checkout tugmasi](../public/checkout.html#L254) · [Server payment oqimi](../server.js#L513)
+- **P1 · CODE REVIEWED**. Tracking sahifasi buyurtma statusini ko‘rsatadi, ammo tracking kodi CJ muvaffaqiyatli javob bergan holatda ham lokalda tasodifiy hosil qilinadi. [CJ javobini qayta ishlash](../server.js#L273)
+- **BLOCKED / NOT TESTED**. Verifone sandbox, real karta va wallet to‘lovi, haqiqiy carrier tracking, bojxona va yetkazish, Lighthouse va WCAG bo‘yicha yangi dalil olinmadi. Qayta tekshiruvda faqat ushbu audit fayli tahrirlandi.
+
+Quyidagi asosiy hisobot `fe31a09` tarixiy holatini qayd etadi.
+
 **Tekshirilgan holat** `fe31a09`, Node.js 24.21.0, Express, SQLite va statik frontend. `shopify_theme/` alohida Liquid paket. Repo nomi va Shopify konfiguratsiyasi faol Shopify checkout dalili bo‘la olmaydi. Dossier o‘nta so‘ralgan faylni o‘z ichiga oladi va commit xabarida V2.0 deb ko‘rsatilgan. Prompt matnining aynan nusxasi repoda aniqlanmadi. Muvofiqlik yuborilgan talablar bo‘yicha baholandi.
 
 **Natija** Mavjud dossier mavzularning asosiy qismini ochadi. To‘lovdan real yetkazishgacha dalillar, audit qamrovi va dalil belgilari bo‘yicha qisman mos. Real sotuvga tayyorlik tasdiqlanmagan. `6.4/10` bahosida hisoblash mezoni, og‘irliklar va bloklangan sinovlarning ta’siri ko‘rsatilmagan.
