@@ -613,7 +613,7 @@ async function handleCheckoutExecution() {
 
   const btn = document.getElementById("checkoutBtn");
   btn.disabled = true;
-  btn.innerHTML = `PROCESSING CHECKOUT...`;
+  btn.innerHTML = `LOCKING ALLOCATION...`;
 
   try {
     const res = await fetch("/api/checkout", {
@@ -641,14 +641,14 @@ async function handleCheckoutExecution() {
       updateCartDisplay();
       window.location.href = data.checkoutUrl;
     } else {
-      showToast(data.message || "Checkout could not be processed");
+      showToast(data.message || "Reservation could not be processed");
       btn.disabled = false;
-      btn.innerHTML = "PROCEED TO SECURE CHECKOUT";
+      btn.innerHTML = "RESERVE VIP ALLOCATION ($0 TODAY)";
     }
   } catch (err) {
     showToast("Network connection timeout. Please retry.");
     btn.disabled = false;
-    btn.innerHTML = "PROCEED TO SECURE CHECKOUT";
+    btn.innerHTML = "RESERVE VIP ALLOCATION ($0 TODAY)";
   }
 }
 

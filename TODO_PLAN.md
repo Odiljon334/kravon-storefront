@@ -25,3 +25,12 @@
 - [x] 4. Commit and Push to GitHub:
   - Stage all code and updated audit dossiers
   - Commit cleanly and push to `origin/main`
+
+## Phase 4: Zero-Capital Launch Strategy (VIP Pre-Order Model & Viral Traffic Blueprint)
+- [x] Step 1: Open official Payoneer registration page in Chrome for user verification ($0 cost, requires passport + phone)
+- [x] Step 2: Implement VIP Pre-Order / Allocation Reservation UI across storefront (`public/index.html`, `public/checkout.html`, `public/checkout-success.html`, `public/app.js`)
+- [x] Step 3: Implement backend allocation reservation handler in `server.js` (`paymentMethod: "ALLOCATION_RESERVATION"`) and update test suite (24 tests)
+- [x] Step 4: Verify Zero-Comment Rule across all modified files (100% clean)
+- [x] Step 5: Run full test suite `NODE_ENV=test node --test test/storefront.test.js` (24/24 tests pass, 0 failures)
+- [ ] Step 6: Commit and push cleanly to GitHub `origin/main`
+- [ ] Step 7: Provide exact, battle-tested TikTok/Reels viral script blueprint for 0-budget organic traffic generation

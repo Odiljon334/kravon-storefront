@@ -472,4 +472,41 @@ describe("Kravon Production Storefront & Security Suite", () => {
     const badAmountData = await badAmountRes.json();
     assert.match(badAmountData.error, /Payment amount mismatch/);
   });
+
+  test("POST /api/payment/simulate with ALLOCATION_RESERVATION sets ALLOCATION_RESERVED status", async () => {
+    const checkoutRes = await fetch(`${baseUrl}/api/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: [
+          { id: "prod_anime_1", variantId: "var_mask_cyan", quantity: 1 }
+        ],
+        customerName: "VIP Collector",
+        customerEmail: "collector@kravon.com",
+        shippingAddress: "77 Cyberpunk Way",
+        shippingCity: "Tokyo",
+        shippingZip: "100-0001",
+        shippingCountryCode: "JP"
+      })
+    });
+    const checkoutData = await checkoutRes.json();
+    const orderId = checkoutData.orderId;
+
+    const allocRes = await fetch(`${baseUrl}/api/payment/simulate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderId,
+        paymentMethod: "ALLOCATION_RESERVATION"
+      })
+    });
+    assert.equal(allocRes.status, 200);
+    const allocData = await allocRes.json();
+    assert.equal(allocData.success, true);
+    assert.match(allocData.message, /VIP allocation reserved/);
+
+    const updated = getOrderById(orderId);
+    assert.equal(updated.paymentStatus, "ALLOCATION_RESERVED");
+    assert.equal(updated.status, "CONFIRMED_AND_ROUTED");
+  });
 });

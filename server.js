@@ -1,11 +1,16 @@
 import express from "express";
 import path from "node:path";
 import crypto from "node:crypto";
+import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { saveOrder, getOrders, getOrderById, updateOrderStatus, saveSubscriber, getSubscribers } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+if (process.loadEnvFile && fs.existsSync(path.join(__dirname, ".env"))) {
+  process.loadEnvFile(path.join(__dirname, ".env"));
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -594,7 +599,7 @@ app.post("/api/payment/simulate", async (req, res) => {
     return res.status(404).json({ success: false, error: "Order not found" });
   }
 
-  if (order.paymentStatus === "PAID") {
+  if (order.paymentStatus === "PAID" || order.paymentStatus === "ALLOCATION_RESERVED") {
     return res.json({
       success: true,
       message: "Order already confirmed",
@@ -613,11 +618,14 @@ app.post("/api/payment/simulate", async (req, res) => {
     products: order.items
   });
 
-  updateOrderStatus(orderId, "CONFIRMED_AND_ROUTED", "PAID", cjFulfillment);
+  const targetPaymentStatus = (paymentMethod === "ALLOCATION_RESERVATION") ? "ALLOCATION_RESERVED" : "PAID";
+  updateOrderStatus(orderId, "CONFIRMED_AND_ROUTED", targetPaymentStatus, cjFulfillment);
 
   res.json({
     success: true,
-    message: "Sandbox test payment authorized and routed to staging hub",
+    message: (paymentMethod === "ALLOCATION_RESERVATION")
+      ? "VIP allocation reserved and queued for batch production"
+      : "Sandbox test payment authorized and routed to staging hub",
     orderId,
     paymentMethod,
     fulfillment: cjFulfillment,

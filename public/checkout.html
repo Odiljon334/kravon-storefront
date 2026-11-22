@@ -144,17 +144,17 @@
       </div>
 
       <div class="checkout-card">
-        <h2>Payment Authorization</h2>
+        <h2>Allocation & Payment Telemetry</h2>
 
         <div id="gatewayInfoBox" class="gateway-notice">
-          <div id="modeBadge" class="sandbox-badge">SANDBOX TEST PIPELINE</div>
+          <div id="modeBadge" class="sandbox-badge">DROP 01 · VIP ALLOCATION PROTOCOL</div>
           <p id="gatewayNoticeText">
-            Verifone / 2Checkout underwriting approval in progress. The store is operating in sandbox verification mode.
+            Batch #01 limited archive allocation is active. Reserve your numbered piece with $0 upfront today. Your order is secured in SQLite fulfillment telemetry.
           </p>
         </div>
 
         <button id="btnAuthorizePayment" class="btn-pay-action">
-          Simulate Sandbox Authorization
+          Confirm VIP Allocation Reservation ($0 Today)
         </button>
 
         <div id="paymentFeedback" style="display: none; margin-top: 14px; font-size: 13px; font-family: 'JetBrains Mono', monospace;"></div>
@@ -163,7 +163,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          PCI-DSS Level 1 Compliant · EBU R128 · Verifone Verified
+          Zero Upfront Risk · Encrypted Telemetry · Priority Queue
         </div>
       </div>
     </div>
@@ -231,9 +231,12 @@
             noticeText.textContent = "You will be redirected to the official 2Checkout (Verifone) encrypted payment portal to complete this transaction.";
             btn.textContent = "Proceed to 2Checkout Payment";
           } else {
-            modeBadge.textContent = "SANDBOX TEST PIPELINE";
-            noticeText.textContent = "Merchant underwriting approval in progress. The store is operating in sandbox mode. Clicking below authorizes a test transaction.";
-            btn.textContent = "Authorize Sandbox Test Payment";
+            modeBadge.textContent = "DROP 01 · VIP ALLOCATION PROTOCOL";
+            modeBadge.style.color = "#00e5ff";
+            modeBadge.style.borderColor = "#00e5ff";
+            modeBadge.style.background = "rgba(0, 229, 255, 0.15)";
+            noticeText.textContent = "Batch #01 limited archive allocation is active. Reserve your numbered piece with $0 upfront today. Your order is secured in SQLite fulfillment telemetry.";
+            btn.textContent = "Confirm VIP Allocation Reservation ($0 Today)";
           }
         }
       } catch (err) {
@@ -251,10 +254,10 @@
         return;
       }
 
-      btn.textContent = "Processing Authorization...";
+      btn.textContent = "Locking Reservation...";
       feedback.style.display = "block";
       feedback.style.color = "#00e5ff";
-      feedback.textContent = "Validating cryptographic token in sandbox...";
+      feedback.textContent = "Securing numbered slot in batch allocation ledger...";
 
       try {
         const res = await fetch("/api/payment/simulate", {
@@ -262,28 +265,28 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             orderId: orderId,
-            paymentMethod: "SANDBOX_TEST"
+            paymentMethod: "ALLOCATION_RESERVATION"
           })
         });
 
         const result = await res.json();
         if (result.success) {
           feedback.style.color = "#10b981";
-          feedback.textContent = "Payment authorized. Routing to fulfillment ledger...";
+          feedback.textContent = "Allocation locked. Routing to confirmation telemetry...";
           setTimeout(() => {
             window.location.href = result.redirectUrl || ("/checkout-success.html?orderId=" + encodeURIComponent(orderId));
-          }, 800);
+          }, 600);
         } else {
           feedback.style.color = "#ef4444";
-          feedback.textContent = result.error || "Payment authorization failed.";
+          feedback.textContent = result.error || "Reservation failed.";
           btn.disabled = false;
-          btn.textContent = "Authorize Sandbox Test Payment";
+          btn.textContent = "Confirm VIP Allocation Reservation ($0 Today)";
         }
       } catch (err) {
         feedback.style.color = "#ef4444";
         feedback.textContent = "Gateway communication error.";
         btn.disabled = false;
-        btn.textContent = "Authorize Sandbox Test Payment";
+        btn.textContent = "Confirm VIP Allocation Reservation ($0 Today)";
       }
     });
 

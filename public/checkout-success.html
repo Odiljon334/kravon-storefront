@@ -237,32 +237,42 @@
 
         if (data.success) {
           const isPaid = data.paymentStatus === "PAID";
+          const isAllocation = data.paymentStatus === "ALLOCATION_RESERVED";
           const symbol = data.currency === "EUR" ? "€" : "$";
-          document.getElementById("displayTotal").textContent = symbol + Number(data.totalAmount).toFixed(2);
           document.getElementById("displayDestination").textContent = data.shippingCountry || "Global Hub";
 
           const payBadge = document.getElementById("displayPaymentStatus");
           const fulBadge = document.getElementById("displayFulfillmentStatus");
           const iconBox = document.getElementById("iconBox");
 
-          if (isPaid) {
+          if (isPaid || isAllocation) {
             payBadge.className = "status-badge status-paid";
-            payBadge.textContent = "PAID & VERIFIED";
+            payBadge.textContent = isAllocation ? "ALLOCATION SECURED" : "PAID & VERIFIED";
 
             fulBadge.className = "status-badge status-paid";
-            fulBadge.textContent = data.fulfillmentStatus || "ROUTED TO WAREHOUSE";
+            fulBadge.textContent = isAllocation ? "QUEUED FOR BATCH #01" : (data.fulfillmentStatus || "ROUTED TO WAREHOUSE");
 
             iconBox.className = "check-icon";
             iconBox.innerHTML = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>';
 
-            document.getElementById("receiptTitle").textContent = "Acquisition Verified & Routed";
-            document.getElementById("receiptDesc").textContent = "Payment authorized. Your order has been registered and scheduled for air cargo dispatch.";
-            document.getElementById("totalLabel").textContent = "Total Paid:";
-
-            if (data.trackingNumber) {
-              document.getElementById("logisticsBody").innerHTML = `Consignment: <strong>${data.trackingNumber}</strong> via <strong>${data.carrier || "CJPacket"}</strong>. Dispatch active.`;
+            if (isAllocation) {
+              document.getElementById("receiptTitle").textContent = "VIP Allocation Confirmed";
+              document.getElementById("receiptDesc").textContent = "Your piece is locked in the limited batch production queue. No upfront charge today. Telemetry and dispatch notices will stream to your inbox.";
+              document.getElementById("totalLabel").textContent = "Due Today:";
+              document.getElementById("displayTotal").textContent = "$0.00 (Balance " + symbol + Number(data.totalAmount).toFixed(2) + " upon batch release)";
+              document.getElementById("logisticsTitle").textContent = "Atelier Batch Allocation";
+              document.getElementById("logisticsBody").textContent = "Order queued for numbered craft inspection in Hangzhou / Shenzhen atelier hub. Priority slot assigned.";
             } else {
-              document.getElementById("logisticsBody").textContent = "Order queued for automated packaging in Hangzhou / Shenzhen logistics hub.";
+              document.getElementById("receiptTitle").textContent = "Acquisition Verified & Routed";
+              document.getElementById("receiptDesc").textContent = "Payment authorized. Your order has been registered and scheduled for air cargo dispatch.";
+              document.getElementById("totalLabel").textContent = "Total Paid:";
+              document.getElementById("displayTotal").textContent = symbol + Number(data.totalAmount).toFixed(2);
+
+              if (data.trackingNumber) {
+                document.getElementById("logisticsBody").innerHTML = `Consignment: <strong>${data.trackingNumber}</strong> via <strong>${data.carrier || "CJPacket"}</strong>. Dispatch active.`;
+              } else {
+                document.getElementById("logisticsBody").textContent = "Order queued for automated packaging in Hangzhou / Shenzhen logistics hub.";
+              }
             }
 
             document.getElementById("actionContainer").innerHTML = '<a href="/" class="btn-action-primary">Return to Storefront</a>';
@@ -279,6 +289,7 @@
             document.getElementById("receiptTitle").textContent = "Authorization Required";
             document.getElementById("receiptDesc").textContent = "Your acquisition details have been stored. Complete payment authorization to initiate warehouse packaging.";
             document.getElementById("totalLabel").textContent = "Total Due:";
+            document.getElementById("displayTotal").textContent = symbol + Number(data.totalAmount).toFixed(2);
 
             document.getElementById("actionContainer").innerHTML = `
               <a href="/checkout.html?orderId=${encodeURIComponent(orderId)}" class="btn-action-primary">Proceed to Payment Gateway</a>
