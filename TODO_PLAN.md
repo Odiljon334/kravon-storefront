@@ -1,7 +1,7 @@
-# KRAVØN Elite Storefront Elevation & Bug Fixes Plan
+# KRAVØN World-Class Luxury Elevation Plan
 
-- [x] 1. public/index.html ni yuksaltirish: Neo-Tokyo hero banner, qidiruv (search) va saralash (sort) bari, categoryNav ID si va mukammal mobil tuzilma
-- [x] 2. public/style.css ni yuksaltirish: savat rasmlari (64px), to'liq scrollable savat tortmasi, mobil gorizontal scrollni yo'qotish, variantlar va galereya dizayni
-- [x] 3. public/app.js ni yuksaltirish: jonli qidiruv va narx bo'yicha saralash, toifa filtrlari, modalda dinamik narx va ko'p rasmli galereya, Escape tugmasi
-- [x] 4. server.js ni yuksaltirish: davlat kodlari xaritasi, /api/* 404 JSON xatoliklari, /api/cj/orders xavfsizligi va buyurtmalar quvuri
-- [x] 5. test/storefront.test.js ni kengaytirish (10/10 pass), barcha testlarni o'tkazish, zero-comment audit va git ga commit qilish
+- [x] 1. public/index.html ni yuksaltirish: arzon emoji va oddiy matnlarni yo'qotish, 4 ta arxitekturaviy SVG Trust Telemetry kartalari, haqiqiy SVG to'lov logolari (Visa, Mastercard, Amex, Apple Pay, Google Pay, SSL 256), yuqori moda editorial footer va xalqaro toza checkout formasi
+- [x] 2. public/style.css ni yuksaltirish: Trust Telemetry Grid, to'lov logolari uchun neomorphic/glassmorphic kartalar, colophon footer, jonli telemetriya indikatori va siyosat modali dizayni
+- [x] 3. public/app.js ni yuksaltirish: to'liq xalqaro yuqori darajadagi ingliz tili, bo'sh savat va bo'sh katalog holatlari, interaktiv siyosat modali tizimi, newsletter dispatch va concierge nusxalash
+- [x] 4. Alohida siyosat sahifalarini (privacy.html, terms.html, refund.html, shipping.html, contact.html) yagona lyuks avangard uslubiga keltirish
+- [x] 5. Barcha testlarni o'tkazish (10/10 pass), zero-comment qat'iy tekshiruvi, foydalanuvchining ochiq Chrome tabini CDP orqali yangilash va vizual tekshiruv

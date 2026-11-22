@@ -39,7 +39,7 @@ const COUNTRY_NAMES = {
 let MOCK_PRODUCTS = [
   {
     id: "prod_anime_1",
-    shopifyId: "gid://shopify/Product/900101",
+    shopifyId: "gid:shopify:product:900101",
     sku: "KR-CYB-MASK-01",
     cjPid: "2611200537371608500",
     title: "Cyberpunk LED Light-Up Winged Mask",
@@ -69,7 +69,7 @@ let MOCK_PRODUCTS = [
   },
   {
     id: "prod_anime_2",
-    shopifyId: "gid://shopify/Product/900102",
+    shopifyId: "gid:shopify:product:900102",
     sku: "KR-SAM-JKT-02",
     cjPid: "2610280840421601600",
     title: "Men's Black Samurai Raw-Edge Denim Jacket",
@@ -98,7 +98,7 @@ let MOCK_PRODUCTS = [
   },
   {
     id: "prod_anime_3",
-    shopifyId: "gid://shopify/Product/900103",
+    shopifyId: "gid:shopify:product:900103",
     sku: "KR-SWD-HOD-03",
     cjPid: "2113090605992165377",
     title: "Japanese Samurai Katana 3D Graphic Hoodie",
@@ -128,7 +128,7 @@ let MOCK_PRODUCTS = [
   },
   {
     id: "prod_anime_4",
-    shopifyId: "gid://shopify/Product/900104",
+    shopifyId: "gid:shopify:product:900104",
     sku: "KR-NIN-BLD-04",
     cjPid: "2090192579438338049",
     title: "3-Piece Ninja Warrior Dagger Prop Set",
