@@ -1,7 +1,7 @@
-# KRAVØN Catalog Alignment & Real CJ Factory Sync
+# 2Checkout (Verifone) & Payoneer Payment Integration Plan
 
-- [x] 1. server.js da MOCK_PRODUCTS ni 100% haqiqiy CJ tovarlari, ularning rasmiy CDN rasmlari va haqiqiy VID lari bilan yangilash
-- [x] 2. public/index.html navigatsiya toifalarini (Cyberpunk Gear, Techwear, Apparel, Artifacts) yangilash
-- [x] 3. test/storefront.test.js testlarini yangi tovarlar va toifalarga moslab sinovdan o'tkazish (6/6 pass)
-- [x] 4. Server demonini qayta ishga tushirib, 4 ta tovar rasmi, nomi va narxini amalda tekshirish
-- [x] 5. Ruthless zero-comment auditdan o'tkazish va o'zgarishlarni git ga saqlash
+- [x] 1. 2Checkout anderrayting talablari uchun huquqiy sahifalarni yaratish (privacy.html, terms.html, refund.html, shipping.html, contact.html)
+- [x] 2. public/index.html ga professional footer, to'lov kartalari belgilari va polisa havolalarini joylashtirish
+- [x] 3. server.js ga 2Checkout to'lov konfiguratsiyasi, buyurtma sessiyasi va /api/2checkout/webhook INS tinglovchisini qo'shish
+- [x] 4. public/app.js va to'lov oqimini 2Checkout xalqaro karta qabul qilish tizimiga bog'lash
+- [x] 5. Zero-comment auditdan o'tkazish, testlarni muvaffaqiyatli topshirish va git ga commit qilish

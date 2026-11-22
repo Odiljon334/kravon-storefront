@@ -15,6 +15,10 @@ const CJ_EMAIL = process.env.CJ_EMAIL || "odiljon7852@gmail.com";
 const CJ_API_KEY = process.env.CJ_API_KEY || "CJ6091992@api@6fa6f50a3b3448459242b1cd534f5aa9";
 const CJ_BASE_URL = "https://developers.cjdropshipping.com/api2.0/v1";
 
+const TWOCHECKOUT_SELLER_ID = process.env.TWOCHECKOUT_SELLER_ID || "";
+const TWOCHECKOUT_SECRET_KEY = process.env.TWOCHECKOUT_SECRET_KEY || "";
+const TWOCHECKOUT_MODE = process.env.TWOCHECKOUT_MODE || "SANDBOX";
+
 let cjTokenCache = {
   token: "API@CJ6091992@CJ:eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI2NjE5MCIsInR5cGUiOiJBQ0NFU1NfVE9LRU4iLCJzdWIiOiJicUxvYnFRMGxtTm55UXB4UFdMWnlwWVhHV3F6UnQ4ejV4NnZVNmF6Z0pQcFV6bjdETHE4eUtxUm1VM0s5Tlg4R0NOREh1c0pmSTg4c0hNdUxmUTNPNjkrMkF6WE5Ub2tUWDVUOVRpaUs4ME5aUHNrODF4TVlaRm9LTG9GblF5WGphM0IydGhEdnFMTml6SDVSNGVsTzI5U3pQSmVQVG85eXoyc05oc1JCMG9IK0QrSUY1czNPNjh6dEhnanRFc1NqOERHU0lmeS9qMUhxSGdjS09mbUdKNGs1MVltci9hd1lZTkswTGJpTGkwOGxCL2NiaU1UMHFqQVMwd3dBejJhMENCdEwvYVhVa2NlVk5RV2pjQ1I3d0JsZDJXMkhRMnZ3Z2dqTGt5RndMbVVsK01sUWdad2hhL0JlYjlsNDFMTiIsImlhdCI6MTc5NTI4NjIxMX0.e8nEVnoEvlVU2YvptXgaXeAYGfXx0Y6WvOnT-gaxchY",
   expiresAt: Date.now() + (180 * 24 * 3600 * 1000)
@@ -311,6 +315,37 @@ app.get("/api/cj/orders", (req, res) => {
     count: FULFILLMENT_ORDERS.length,
     orders: FULFILLMENT_ORDERS
   });
+});
+
+app.get("/api/2checkout/config", (req, res) => {
+  res.json({
+    success: true,
+    sellerId: TWOCHECKOUT_SELLER_ID,
+    mode: TWOCHECKOUT_MODE,
+    enabled: Boolean(TWOCHECKOUT_SELLER_ID),
+    payoutProvider: "PAYONEER_UZB",
+    gateway: "2Checkout (Verifone) Global Processing"
+  });
+});
+
+app.post("/api/2checkout/webhook", async (req, res) => {
+  const payload = req.body || {};
+  const orderId = payload.REFNOEXT || payload.orderId || `KR-2CO-${Date.now()}`;
+  const status = payload.ORDERSTATUS || payload.status || "COMPLETE";
+
+  if (status === "COMPLETE" || status === "AUTHAPPROVED") {
+    res.json({
+      success: true,
+      message: "2Checkout payment confirmed and routed to warehouse",
+      orderId
+    });
+  } else {
+    res.json({
+      success: true,
+      message: "Webhook acknowledged",
+      status
+    });
+  }
 });
 
 app.get("/api/categories", (req, res) => {

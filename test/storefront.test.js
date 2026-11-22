@@ -109,4 +109,30 @@ describe("Kravon Headless Storefront Suite", () => {
     assert.ok(data.fulfillment);
     assert.ok(data.checkoutUrl.includes("checkout-success.html"));
   });
+
+  test("GET /api/2checkout/config returns gateway configuration and Payoneer integration", async () => {
+    const res = await fetch(`${baseUrl}/api/2checkout/config`);
+    assert.equal(res.status, 200);
+
+    const data = await res.json();
+    assert.equal(data.success, true);
+    assert.equal(data.payoutProvider, "PAYONEER_UZB");
+    assert.ok(data.gateway);
+  });
+
+  test("POST /api/2checkout/webhook processes order status notification", async () => {
+    const res = await fetch(`${baseUrl}/api/2checkout/webhook`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        REFNOEXT: "KR-TEST-2CO-01",
+        ORDERSTATUS: "COMPLETE"
+      })
+    });
+
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    assert.equal(data.success, true);
+    assert.equal(data.orderId, "KR-TEST-2CO-01");
+  });
 });
