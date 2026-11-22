@@ -42,73 +42,37 @@
   <main class="container">
     <section class="hero-quiet">
       <div class="hero-top-meta">
-        <span class="hero-badge">NEO-TOKYO ATELIER · DROP 01</span>
-        <span class="telemetry-live-dot">
-          <span class="live-pulse"></span>
-          ARCHIVE FEED ONLINE
-        </span>
+        <span class="hero-badge">DROP 01 · LIMITED ARCHIVE</span>
       </div>
       <h1 class="hero-title">Cyberpunk Techwear & Anime Artifacts.</h1>
-      <p class="hero-desc">Limited-run technical outerwear, illuminated combat faceplates, and forged katana instruments engineered at independent atelier armories in Tokyo and Shenzhen.</p>
+      <p class="hero-desc">Engineered garments, illuminated combat faceplates, and hand-forged anime instruments.</p>
 
-      <div class="trust-telemetry-grid">
-        <div class="telemetry-card">
-          <div class="telemetry-icon-wrap">
-            <svg class="telemetry-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-              <path d="M21 12H3"/>
-              <path d="M16 4l5 8-5 8"/>
-            </svg>
-          </div>
-          <div class="telemetry-content">
-            <span class="telemetry-spec">LOGISTICS // SPEC 01</span>
-            <h4 class="telemetry-title">24-48H PRIORITY DISPATCH</h4>
-            <p class="telemetry-desc">Direct factory dispatch from Tokyo & Shenzhen atelier armories with expedited air freight.</p>
-          </div>
+      <div class="trust-strip">
+        <div class="trust-item">
+          <svg class="trust-item-svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M4 10h12M11 5l5 5-5 5"/>
+          </svg>
+          <span class="trust-text">24-48H Express Air Freight</span>
         </div>
-
-        <div class="telemetry-card">
-          <div class="telemetry-icon-wrap">
-            <svg class="telemetry-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <circle cx="12" cy="12" r="9"/>
-              <path d="M12 3a9 9 0 0 0 0 18M3 12a9 9 0 0 0 18 0"/>
-              <circle cx="12" cy="12" r="2" fill="currentColor"/>
-            </svg>
-          </div>
-          <div class="telemetry-content">
-            <span class="telemetry-spec">TELEMETRY // LIVE SATELLITE</span>
-            <h4 class="telemetry-title">GLOBAL END-TO-END TRACKING</h4>
-            <p class="telemetry-desc">Encrypted real-time courier telemetry across 140+ countries via direct carrier API synchronization.</p>
-          </div>
+        <div class="trust-item">
+          <svg class="trust-item-svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="10" cy="10" r="7"/>
+            <path d="M10 3a7 7 0 0 0 0 14M3 10a7 7 0 0 0 14 0"/>
+          </svg>
+          <span class="trust-text">Global Satellite Tracking</span>
         </div>
-
-        <div class="telemetry-card">
-          <div class="telemetry-icon-wrap">
-            <svg class="telemetry-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              <path d="M9 12l2 2 4-4"/>
-            </svg>
-          </div>
-          <div class="telemetry-content">
-            <span class="telemetry-spec">ARCHIVE // PROTOCOL 30</span>
-            <h4 class="telemetry-title">30-DAY INSPECTION PROTOCOL</h4>
-            <p class="telemetry-desc">Zero-risk archive acquisition. 30 days to inspect materials and finish with full refund guarantee.</p>
-          </div>
+        <div class="trust-item">
+          <svg class="trust-item-svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M10 18s6-3 6-8V4l-6-2-6 2v6c0 5 6 8 6 8z"/>
+          </svg>
+          <span class="trust-text">30-Day Inspection & Refund</span>
         </div>
-
-        <div class="telemetry-card">
-          <div class="telemetry-icon-wrap">
-            <svg class="telemetry-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              <circle cx="12" cy="16" r="1" fill="currentColor"/>
-            </svg>
-          </div>
-          <div class="telemetry-content">
-            <span class="telemetry-spec">SECURITY // CIPHER-256</span>
-            <h4 class="telemetry-title">ZERO-KNOWLEDGE ENCRYPTED</h4>
-            <p class="telemetry-desc">Tier-1 PCI-DSS certified vault checkout with AES-256 military-grade transaction tokenization.</p>
-          </div>
+        <div class="trust-item">
+          <svg class="trust-item-svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="4" y="9" width="12" height="9" rx="2"/>
+            <path d="M7 9V6a3 3 0 0 1 6 0v3"/>
+          </svg>
+          <span class="trust-text">256-Bit Encrypted Vault</span>
         </div>
       </div>
     </section>
@@ -119,12 +83,12 @@
           <circle cx="9" cy="9" r="6"/>
           <path d="M13.5 13.5L18 18"/>
         </svg>
-        <input type="text" id="searchInput" class="search-field" placeholder="Search archive (e.g. Katana, Faceplate, Denim Jacket)..." autocomplete="off">
+        <input type="text" id="searchInput" class="search-field" placeholder="Search archive (e.g. Katana, Faceplate, Denim)..." autocomplete="off">
         <button id="searchClearBtn" class="search-clear-btn" style="display: none;" aria-label="Clear Search">✕</button>
       </div>
 
       <div class="sort-box-wrap">
-        <label for="sortSelect" class="sort-label">Sort By:</label>
+        <label for="sortSelect" class="sort-label">Sort:</label>
         <select id="sortSelect" class="sort-select">
           <option value="featured">Featured Editions</option>
           <option value="price-asc">Price: Low to High</option>
@@ -139,97 +103,47 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <div class="footer-colophon-header">
-        <div class="colophon-brand-block">
-          <div class="colophon-title-row">
-            <h3 class="colophon-title">KRAVØN // CONCEPT ARCHIVE</h3>
-            <span class="colophon-version">VER 2.4.0</span>
-          </div>
-          <p class="colophon-desc">Autonomous archive concept store and experimental armory engineered for avant-garde artifacts, cyberpunk techwear garments, and hand-forged anime battle instruments.</p>
-          <div class="colophon-coords-row notranslate">
-            <span class="coord-tag">TYO 35.6764° N, 139.6500° E</span>
-            <span class="coord-tag">NYC 40.7128° N, 74.0060° W</span>
-            <span class="coord-tag">ZRH 47.3769° N, 8.5417° E</span>
-          </div>
+      <div class="footer-columns-grid">
+        <div class="footer-col">
+          <h4 class="footer-col-title notranslate">KRAVØN ARCHIVE</h4>
+          <p class="footer-col-desc">Autonomous archive concept store for avant-garde techwear and anime artifacts.</p>
           <div class="system-status-indicator">
             <span class="pulse-indicator"></span>
-            <span class="status-msg">SYSTEM OPERATIONAL · ALL ATELIER HUBS ONLINE</span>
+            <span class="status-msg">Atelier Network Operational</span>
           </div>
         </div>
 
-        <div class="colophon-dispatch-block">
-          <h4 class="dispatch-title">ENCRYPTED VIP TRANSMISSION</h4>
-          <p class="dispatch-desc">Subscribe to receive private cryptographic keys for unreleased prototype garments and zero-day artifact releases.</p>
-          <form id="newsletterForm" class="dispatch-form" onsubmit="return false;">
-            <input type="email" id="newsletterEmail" class="dispatch-input" placeholder="Enter secure electronic mail..." required>
-            <button type="submit" id="newsletterSubmitBtn" class="dispatch-btn">TRANSMIT</button>
+        <div class="footer-col">
+          <h4 class="footer-col-title">DIRECTIVES</h4>
+          <ul class="footer-col-links">
+            <li><a href="/privacy.html" class="policy-link-btn" data-policy="privacy">Privacy Protocol</a></li>
+            <li><a href="/terms.html" class="policy-link-btn" data-policy="terms">Terms of Engagement</a></li>
+            <li><a href="/refund.html" class="policy-link-btn" data-policy="refund">30-Day Returns</a></li>
+            <li><a href="/shipping.html" class="policy-link-btn" data-policy="shipping">Global Logistics</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-col-title">CONCIERGE & ACCESS</h4>
+          <div class="concierge-line">
+            <span class="concierge-email-text" id="conciergeMail">concierge@kravon-archive.com</span>
+            <button id="copyConciergeBtn" class="copy-badge-btn" title="Copy Concierge Email">COPY</button>
+          </div>
+          <form id="newsletterForm" class="dispatch-form" onsubmit="return false;" style="margin-top: 14px;">
+            <input type="email" id="newsletterEmail" class="dispatch-input" placeholder="VIP email access..." required>
+            <button type="submit" id="newsletterSubmitBtn" class="dispatch-btn">JOIN</button>
           </form>
           <div id="newsletterFeedback" class="dispatch-feedback"></div>
         </div>
       </div>
 
-      <div class="footer-columns-grid">
-        <div class="footer-col">
-          <h5 class="footer-col-title">ARCHIVE COLLECTIONS</h5>
-          <ul class="footer-col-links">
-            <li><a href="#" onclick="filterByCategory('Cyberpunk Gear'); return false;">Cyberpunk LED Faceplates</a></li>
-            <li><a href="#" onclick="filterByCategory('Techwear'); return false;">Asymmetric Samurai Denim</a></li>
-            <li><a href="#" onclick="filterByCategory('Apparel'); return false;">Japanese 3D Graphic Hoodies</a></li>
-            <li><a href="#" onclick="filterByCategory('Artifacts'); return false;">Forged Triple Ninja Daggers</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h5 class="footer-col-title">ARCHIVE DIRECTIVES</h5>
-          <ul class="footer-col-links">
-            <li><a href="/privacy.html" class="policy-link-btn" data-policy="privacy">Privacy Protocol</a></li>
-            <li><a href="/terms.html" class="policy-link-btn" data-policy="terms">Terms of Engagement</a></li>
-            <li><a href="/refund.html" class="policy-link-btn" data-policy="refund">30-Day Return & Inspection</a></li>
-            <li><a href="/shipping.html" class="policy-link-btn" data-policy="shipping">Global Logistics & Freight</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h5 class="footer-col-title">CLIENT CONCIERGE</h5>
-          <ul class="footer-col-links">
-            <li>
-              <div class="concierge-line">
-                <span class="concierge-email-text" id="conciergeMail">concierge@kravon-archive.com</span>
-                <button id="copyConciergeBtn" class="copy-badge-btn" title="Copy Concierge Email">COPY</button>
-              </div>
-            </li>
-            <li><span class="footer-sub-text">Average Direct Response: &lt; 2 Hours</span></li>
-            <li><span class="footer-sub-text">Autonomous Direct Fulfillment</span></li>
-            <li><a href="/contact.html">Concierge Contact Portal</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h5 class="footer-col-title">ATELIER ARMORIES</h5>
-          <div class="atelier-address-box">
-            <div class="atelier-unit">
-              <strong>Tokyo Design Unit</strong>
-              <span>Shibuya Ward, Tokyo 150-0001, JP</span>
-            </div>
-            <div class="atelier-unit">
-              <strong>Shenzhen Mecha Works</strong>
-              <span>Nanshan District, Shenzhen, CN</span>
-            </div>
-            <div class="atelier-unit">
-              <strong>Zurich Operations</strong>
-              <span>Atelierstrasse 12, 8001 Zürich, CH</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="footer-bottom-bar">
         <div class="footer-legal-copy">
-          © 2026 KRAVØN ARCHIVE CO. ALL RIGHTS RESERVED. AUTONOMOUS CONCEPT ATELIER.
+          © 2026 KRAVØN ARCHIVE CO. ALL RIGHTS RESERVED.
         </div>
 
         <div class="payment-badges-matrix notranslate">
-          <div class="payment-capsule" title="Visa Verified Checkout">
+          <div class="payment-capsule" title="Visa">
             <svg class="pay-svg" viewBox="0 0 48 30" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="48" height="30" rx="4" fill="#0d0f14"/>
               <path d="M19.5 20.5L22.2 7.5H25.4L22.7 20.5H19.5Z" fill="#FFFFFF"/>
@@ -240,7 +154,7 @@
             </svg>
           </div>
 
-          <div class="payment-capsule" title="Mastercard Identity Check">
+          <div class="payment-capsule" title="Mastercard">
             <svg class="pay-svg" viewBox="0 0 48 30" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="48" height="30" rx="4" fill="#0d0f14"/>
               <circle cx="19" cy="15" r="8" fill="#EB001B"/>
@@ -249,7 +163,7 @@
             </svg>
           </div>
 
-          <div class="payment-capsule" title="American Express SafeKey">
+          <div class="payment-capsule" title="Amex">
             <svg class="pay-svg" viewBox="0 0 48 30" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="48" height="30" rx="4" fill="#0d0f14"/>
               <rect x="5" y="5" width="38" height="20" rx="2" fill="#006FCF"/>
@@ -257,7 +171,7 @@
             </svg>
           </div>
 
-          <div class="payment-capsule" title="Apple Pay Secure Biometric">
+          <div class="payment-capsule" title="Apple Pay">
             <svg class="pay-svg" viewBox="0 0 48 30" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="48" height="30" rx="4" fill="#0d0f14"/>
               <path d="M14.5 13.9C14.5 12.3 15.8 11.4 15.9 11.3C15.1 10.2 13.9 10 13.5 10C12.5 9.9 11.5 10.6 11 10.6C10.5 10.6 9.7 10 8.9 10C7.8 10 6.8 10.7 6.2 11.8C5 13.9 5.9 17 7.1 18.7C7.7 19.5 8.3 20.4 9.2 20.4C10.1 20.4 10.4 19.8 11.5 19.8C12.6 19.8 12.9 20.4 13.8 20.4C14.7 20.4 15.3 19.6 15.9 18.8C16.6 17.8 16.9 16.9 16.9 16.8C16.8 16.8 14.5 15.9 14.5 13.9Z" fill="#FFFFFF"/>
@@ -266,7 +180,7 @@
             </svg>
           </div>
 
-          <div class="payment-capsule" title="Google Pay Verified">
+          <div class="payment-capsule" title="Google Pay">
             <svg class="pay-svg" viewBox="0 0 48 30" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="48" height="30" rx="4" fill="#0d0f14"/>
               <path d="M16.5 15.1V13.2H20.6C20.5 12.1 19.7 10.6 16.5 10.6C13.8 10.6 11.6 12.8 11.6 15.5C11.6 18.2 13.8 20.4 16.5 20.4C19.6 20.4 20.9 18.2 20.9 16.8H16.5V15.1Z" fill="#FFFFFF"/>
@@ -274,7 +188,7 @@
             </svg>
           </div>
 
-          <div class="payment-capsule" title="AES-256 Bit SSL Encrypted">
+          <div class="payment-capsule" title="256-Bit SSL">
             <svg class="pay-svg" viewBox="0 0 48 30" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="48" height="30" rx="4" fill="#0d0f14"/>
               <rect x="4" y="4" width="40" height="22" rx="3" stroke="#00e5ff" stroke-width="1.2" stroke-dasharray="2 2"/>
@@ -284,16 +198,6 @@
               <path d="M20 19.5V21.5" stroke="#07080a" stroke-width="1.2"/>
               <text x="30" y="17" fill="#00e5ff" font-family="'JetBrains Mono', monospace" font-size="6" font-weight="bold">256-BIT</text>
               <text x="30" y="23" fill="#e5e7eb" font-family="'JetBrains Mono', monospace" font-size="5">ENCRYPT</text>
-            </svg>
-          </div>
-
-          <div class="payment-capsule" title="2Checkout Verifone Certified">
-            <svg class="pay-svg" viewBox="0 0 48 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="48" height="30" rx="4" fill="#0d0f14"/>
-              <circle cx="15" cy="15" r="7" stroke="#ffb300" stroke-width="1.5"/>
-              <path d="M12.5 15L14.5 17L18 13" stroke="#ffb300" stroke-width="1.5" stroke-linecap="round"/>
-              <text x="25" y="14" fill="#FFFFFF" font-family="'Space Grotesk', sans-serif" font-size="6.5" font-weight="bold">2CHECKOUT</text>
-              <text x="25" y="21" fill="#ffb300" font-family="'JetBrains Mono', monospace" font-size="5">VERIFIED</text>
             </svg>
           </div>
         </div>
@@ -326,7 +230,7 @@
         <div class="input-grid">
           <div class="input-wrap">
             <label class="field-label" for="custName">Recipient Full Name *</label>
-            <input type="text" id="custName" class="form-field" placeholder="e.g. Elena Rostova" required autocomplete="name">
+            <input type="text" id="custName" class="form-field" placeholder="Elena Rostova" required autocomplete="name">
           </div>
           <div class="input-wrap">
             <label class="field-label" for="custEmail">Electronic Mail *</label>
@@ -369,25 +273,11 @@
           </div>
         </div>
 
-        <div class="form-header-badge" style="margin-top: 18px;">
-          <span>PAYMENT INSTRUMENT</span>
-          <span class="badge-sub-cipher">AES-256 ZERO-KNOWLEDGE</span>
-        </div>
-        <div class="card-input-box">
-          <div class="card-number-row">
-            <input type="text" id="cardNumber" class="form-field full-width" placeholder="4000 1234 5678 9010" maxlength="19" autocomplete="cc-number">
-            <div id="cardBrandIcon" class="card-brand-pill">CARD</div>
-          </div>
-          <div class="sub-row">
-            <input type="text" id="cardExpiry" class="form-field" placeholder="MM / YY" maxlength="5" autocomplete="cc-exp">
-            <input type="text" id="cardCvc" class="form-field" placeholder="CVC" maxlength="4" autocomplete="cc-csc">
-          </div>
-        </div>
-        <div class="vault-security-note">
+        <div class="vault-security-note" style="margin-top: 14px;">
           <svg class="vault-svg" viewBox="0 0 16 16" fill="currentColor">
             <path fill-rule="evenodd" d="M8 0a4 4 0 0 0-4 4v2H2.5A1.5 1.5 0 0 0 1 7.5v7A1.5 1.5 0 0 0 2.5 16h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 6H12V4a4 4 0 0 0-4-4zm2.5 6V4a2.5 2.5 0 0 0-5 0v2h5z"/>
           </svg>
-          <span>End-to-End Encrypted Checkout · Zero-Knowledge Storage</span>
+          <span>256-Bit Encrypted Checkout · Worldwide Priority Courier</span>
         </div>
       </div>
     </div>
@@ -406,10 +296,6 @@
         <div class="ledger-line">
           <span>Promotional Allocation</span>
           <span id="ledgerDiscount" style="color: var(--accent-gold);">$0.00</span>
-        </div>
-        <div class="ledger-line">
-          <span>Priority Freight</span>
-          <span id="ledgerShipping" style="color: #00e5ff;">Calculated at Next Step</span>
         </div>
         <div class="ledger-line total">
           <span>Total Acquisition</span>

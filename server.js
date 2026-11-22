@@ -321,7 +321,8 @@ app.get("/api/cj/status", async (req, res) => {
 
 app.get("/api/cj/orders", (req, res) => {
   const adminKey = req.headers["x-admin-key"] || req.query.adminKey;
-  if (adminKey === (process.env.ADMIN_KEY || "kravon_secret_admin_2026")) {
+  const configuredAdminKey = process.env.ADMIN_KEY;
+  if (configuredAdminKey && adminKey === configuredAdminKey) {
     return res.json({
       success: true,
       count: FULFILLMENT_ORDERS.length,
@@ -456,7 +457,13 @@ app.post("/api/checkout", async (req, res) => {
 
   const orderId = `KR-${Math.floor(Math.random() * 900000 + 100000)}`;
   const rate = currency === "EUR" ? 0.92 : 1.0;
-  const rawSubtotal = items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+  const rawSubtotal = items.reduce((sum, item) => {
+    const matched = MOCK_PRODUCTS.find(p => p.id === item.id || p.sku === item.id);
+    const matchedVariant = matched?.variants?.find(v => v.id === item.variantId) || matched?.variants?.[0];
+    const unitPrice = matchedVariant ? matchedVariant.price : (matched ? matched.price : (item.price || 0));
+    const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
+    return sum + (unitPrice * qty);
+  }, 0);
   const totalAmount = rawSubtotal * discountFactor * rate;
   const currencySymbol = currency === "EUR" ? "EUR" : "USD";
 
@@ -515,7 +522,7 @@ app.post("/api/checkout", async (req, res) => {
 
   FULFILLMENT_ORDERS.unshift(orderRecord);
 
-  const checkoutUrl = `/checkout-success.html?orderId=${orderId}&total=${totalAmount.toFixed(2)}&currency=${currencySymbol}&discount=${encodeURIComponent(appliedDiscount || "NONE")}&cjStatus=${encodeURIComponent(cjFulfillment.status || "CONFIRMED_IN_CHINA")}&name=${encodeURIComponent(finalName)}&city=${encodeURIComponent(finalCity)}&country=${encodeURIComponent(finalCountryCode)}`;
+  const checkoutUrl = `/checkout-success.html?orderId=${orderId}&total=${totalAmount.toFixed(2)}&currency=${currencySymbol}`;
 
   res.json({
     success: true,

@@ -19,7 +19,6 @@ async function initApp() {
   bindEventListeners();
   bindPolicyHandlers();
   bindConciergeAndNewsletter();
-  bindCardInputRecognition();
   updateCartDisplay();
   await fetchSystemStatus();
   await loadCatalog();
@@ -223,9 +222,8 @@ function renderCatalog() {
 
   if (filtered.length === 0) {
     container.innerHTML = `<div class="empty-state-box">
-      <div class="empty-state-tag">ARCHIVE TELEMETRY :: NULL ALLOCATION</div>
-      <h3 class="empty-state-title">NO ARTIFACTS MATCH THE CURRENT SPECIFICATION</h3>
-      <p class="empty-state-sub">Zero prototype units matched your query parameters. Reset filters or clear query to inspect available inventory.</p>
+      <h3 class="empty-state-title">No artifacts found</h3>
+      <p class="empty-state-sub">Try searching with another keyword or select a different category.</p>
     </div>`;
     return;
   }
@@ -245,7 +243,6 @@ function renderCatalog() {
             <span class="stock-badge">${product.stockCount || 15} UNITS ALLOCATED</span>
           </div>
           <h3 class="card-title" onclick="openQuickView('${product.id}')">${product.title}</h3>
-          <p class="card-tagline">${product.tagline}</p>
 
           <div class="swatch-row">
             ${product.variants.map((v, i) => `
@@ -545,7 +542,10 @@ function updateCartDisplay() {
             <span class="qty-step-val">${item.quantity}</span>
             <button class="qty-step-btn" onclick="alterCartQty('${item.id}', '${item.variantId}', 1)">+</button>
           </div>
-          <span class="drawer-item-price">${formatPrice(item.price * item.quantity)}</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="drawer-item-price">${formatPrice(item.price * item.quantity)}</span>
+            <button class="drawer-remove-item-btn" onclick="dropCartItem('${item.id}', '${item.variantId}')" title="Remove item">✕</button>
+          </div>
         </div>
       </div>
     </div>
@@ -662,36 +662,6 @@ async function handleCheckoutExecution() {
     btn.disabled = false;
     btn.innerHTML = "PROCEED TO SECURE CHECKOUT";
   }
-}
-
-function bindCardInputRecognition() {
-  const cardInput = document.getElementById("cardNumber");
-  const brandPill = document.getElementById("cardBrandIcon");
-  if (!cardInput || !brandPill) return;
-
-  cardInput.addEventListener("input", (e) => {
-    let val = e.target.value.replace(/\D/g, "");
-    let formatted = "";
-    for (let i = 0; i < val.length; i++) {
-      if (i > 0 && i % 4 === 0) formatted += " ";
-      formatted += val[i];
-    }
-    cardInput.value = formatted;
-
-    if (val.startsWith("4")) {
-      brandPill.textContent = "VISA";
-      brandPill.style.color = "#ffffff";
-    } else if (/^(5[1-5]|2[2-7])/.test(val)) {
-      brandPill.textContent = "MASTERCARD";
-      brandPill.style.color = "#ff5f00";
-    } else if (/^(34|37)/.test(val)) {
-      brandPill.textContent = "AMEX";
-      brandPill.style.color = "#006fcf";
-    } else {
-      brandPill.textContent = "CARD";
-      brandPill.style.color = "var(--accent-gold)";
-    }
-  });
 }
 
 function bindConciergeAndNewsletter() {
