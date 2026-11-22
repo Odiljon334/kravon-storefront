@@ -1,7 +1,8 @@
 import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import { app } from "../server.js";
-import { getOrderById } from "../db.js";
+import { getOrderById, getSubscribers } from "../db.js";
 
 let server;
 let baseUrl;
@@ -58,6 +59,9 @@ describe("Kravon Production Storefront & Security Suite", () => {
     const sitemapXml = await sitemapRes.text();
     assert.match(sitemapXml, /<urlset/);
     assert.match(sitemapXml, /kravon-archive\.com/);
+    assert.match(sitemapXml, /cyberpunk-led-light-up-winged-mask/);
+    assert.match(sitemapXml, /tracking/);
+    assert.match(sitemapXml, /faq/);
   });
 
   test("GET /api/products returns rich technical specifications", async () => {
@@ -106,13 +110,13 @@ describe("Kravon Production Storefront & Security Suite", () => {
     }
   });
 
-  test("POST /api/checkout validates input and stores order in SQLite database", async () => {
+  test("POST /api/checkout validates input and stores order in SQLite with PENDING_PAYMENT", async () => {
     const res = await fetch(`${baseUrl}/api/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         items: [
-          { id: "prod_anime_1", variantId: "var_mask_cyan", price: 118.00, quantity: 1 }
+          { id: "prod_anime_1", variantId: "var_mask_cyan", quantity: 1 }
         ],
         customerName: "Elena Rostova",
         customerEmail: "elena@kravon.com",
@@ -131,13 +135,17 @@ describe("Kravon Production Storefront & Security Suite", () => {
     assert.equal(data.success, true);
     assert.equal(data.subtotal, 118.00);
     assert.equal(data.totalAmount, 106.20);
+    assert.equal(data.paymentStatus, "PENDING_PAYMENT");
     assert.ok(data.orderId);
+    assert.match(data.checkoutUrl, /checkout\.html/);
 
     const persisted = getOrderById(data.orderId);
     assert.ok(persisted);
     assert.equal(persisted.orderId, data.orderId);
     assert.equal(persisted.customerName, "Elena Rostova");
     assert.equal(persisted.totalAmount, 106.20);
+    assert.equal(persisted.paymentStatus, "PENDING_PAYMENT");
+    assert.equal(persisted.status, "UNFULFILLED");
     assert.equal(persisted.items.length, 1);
   });
 
@@ -147,7 +155,7 @@ describe("Kravon Production Storefront & Security Suite", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         items: [
-          { id: "prod_anime_1", quantity: -2, price: 118.00 }
+          { id: "prod_anime_1", quantity: -2 }
         ],
         customerName: "Bad Actor",
         customerEmail: "bad@test.com",
@@ -169,7 +177,7 @@ describe("Kravon Production Storefront & Security Suite", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         items: [
-          { id: "prod_anime_1", quantity: 1, price: 118.00 }
+          { id: "prod_anime_1", quantity: 1 }
         ],
         customerName: "Bad Actor",
         customerEmail: "not-an-email",
@@ -183,6 +191,115 @@ describe("Kravon Production Storefront & Security Suite", () => {
     const data = await res.json();
     assert.equal(data.success, false);
     assert.equal(data.message, "Valid email address required");
+  });
+
+  test("POST /api/checkout rejects unknown products (strict catalog authority)", async () => {
+    const res = await fetch(`${baseUrl}/api/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: [
+          { id: "phantom_rogue_product_99", quantity: 1, price: 1.00 }
+        ],
+        customerName: "Intruder",
+        customerEmail: "intruder@kravon.com",
+        shippingAddress: "123 Street",
+        shippingCity: "City",
+        shippingZip: "10001"
+      })
+    });
+
+    assert.equal(res.status, 400);
+    const data = await res.json();
+    assert.equal(data.success, false);
+    assert.match(data.message, /Product not found/);
+  });
+
+  test("POST /api/payment/simulate authorizes payment and routes order", async () => {
+    const checkoutRes = await fetch(`${baseUrl}/api/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: [
+          { id: "prod_anime_2", variantId: "var_jkt_m", quantity: 1 }
+        ],
+        customerName: "Kenji Sato",
+        customerEmail: "kenji@kravon.com",
+        shippingAddress: "450 Shibuya Crossing",
+        shippingCity: "Tokyo",
+        shippingZip: "150-0002",
+        shippingCountryCode: "JP"
+      })
+    });
+    const checkoutData = await checkoutRes.json();
+    const orderId = checkoutData.orderId;
+
+    const payRes = await fetch(`${baseUrl}/api/payment/simulate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderId,
+        paymentMethod: "CREDIT_CARD"
+      })
+    });
+    assert.equal(payRes.status, 200);
+    const payData = await payRes.json();
+    assert.equal(payData.success, true);
+    assert.ok(payData.fulfillment);
+
+    const updated = getOrderById(orderId);
+    assert.equal(updated.paymentStatus, "PAID");
+    assert.equal(updated.status, "CONFIRMED_AND_ROUTED");
+  });
+
+  test("GET /api/track returns order state, timeline and masks PII", async () => {
+    const checkoutRes = await fetch(`${baseUrl}/api/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: [
+          { id: "prod_anime_4", variantId: "var_dagger_set", quantity: 1 }
+        ],
+        customerName: "Classified Buyer",
+        customerEmail: "buyer@kravon.com",
+        shippingAddress: "400 Intelligence Way",
+        shippingCity: "Washington",
+        shippingZip: "20001",
+        shippingCountryCode: "US"
+      })
+    });
+    const { orderId } = await checkoutRes.json();
+
+    const trackRes = await fetch(`${baseUrl}/api/track?orderId=${orderId}`);
+    assert.equal(trackRes.status, 200);
+    const trackData = await trackRes.json();
+    assert.equal(trackData.success, true);
+    assert.equal(trackData.orderId, orderId);
+    assert.equal(trackData.paymentStatus, "PENDING_PAYMENT");
+    assert.ok(Array.isArray(trackData.timeline));
+    assert.equal(trackData.timeline.length, 5);
+  });
+
+  test("POST /api/newsletter registers valid emails and rejects bad input", async () => {
+    const badRes = await fetch(`${baseUrl}/api/newsletter`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "invalid-email" })
+    });
+    assert.equal(badRes.status, 400);
+
+    const goodRes = await fetch(`${baseUrl}/api/newsletter`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "collector@kravon.com" })
+    });
+    assert.equal(goodRes.status, 200);
+    const goodData = await goodRes.json();
+    assert.equal(goodData.success, true);
+    assert.equal(goodData.subscriber, "collector@kravon.com");
+
+    const subs = getSubscribers();
+    assert.ok(subs.some(s => s.email === "collector@kravon.com"));
   });
 
   test("POST /api/2checkout/webhook blocks unauthenticated forgery with 401", async () => {
@@ -203,6 +320,23 @@ describe("Kravon Production Storefront & Security Suite", () => {
 
   test("POST /api/2checkout/webhook accepts authorized requests and updates order", async () => {
     const webhookSecret = process.env.WEBHOOK_SECRET || "kravon_secure_webhook_secret_2026";
+    const checkoutRes = await fetch(`${baseUrl}/api/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: [
+          { id: "prod_anime_3", variantId: "var_hoodie_l", quantity: 1 }
+        ],
+        customerName: "Webhook Buyer",
+        customerEmail: "buyer@kravon.com",
+        shippingAddress: "77 Cyber Ave",
+        shippingCity: "Berlin",
+        shippingZip: "10115",
+        shippingCountryCode: "DE"
+      })
+    });
+    const { orderId } = await checkoutRes.json();
+
     const res = await fetch(`${baseUrl}/api/2checkout/webhook`, {
       method: "POST",
       headers: {
@@ -210,7 +344,7 @@ describe("Kravon Production Storefront & Security Suite", () => {
         "x-webhook-secret": webhookSecret
       },
       body: JSON.stringify({
-        orderId: "KR-TEST-AUTH-99",
+        orderId,
         status: "COMPLETE"
       })
     });
@@ -218,7 +352,11 @@ describe("Kravon Production Storefront & Security Suite", () => {
     assert.equal(res.status, 200);
     const data = await res.json();
     assert.equal(data.success, true);
-    assert.equal(data.orderId, "KR-TEST-AUTH-99");
+    assert.equal(data.orderId, orderId);
+
+    const updated = getOrderById(orderId);
+    assert.equal(updated.paymentStatus, "PAID");
+    assert.equal(updated.status, "CONFIRMED_AND_ROUTED");
   });
 
   test("GET /api/cj/orders masks sensitive customer details without admin key", async () => {
@@ -239,5 +377,33 @@ describe("Kravon Production Storefront & Security Suite", () => {
     const data = await res.json();
     assert.equal(data.success, false);
     assert.equal(data.error, "API endpoint not found");
+  });
+
+  test("GET /products/:handle returns dedicated SEO product page", async () => {
+    const res = await fetch(`${baseUrl}/products/cyberpunk-led-light-up-winged-mask`);
+    assert.equal(res.status, 200);
+    const html = await res.text();
+    assert.match(html, /Cyberpunk LED Light-Up Winged Mask/);
+    assert.match(html, /schema\.org/);
+    assert.match(html, /KRAVØN Atelier/);
+  });
+
+  test("GET /tracking and /faq return HTTP 200 with dedicated markup", async () => {
+    const trackRes = await fetch(`${baseUrl}/tracking`);
+    assert.equal(trackRes.status, 200);
+    const trackHtml = await trackRes.text();
+    assert.match(trackHtml, /Live Order Telemetry/);
+
+    const faqRes = await fetch(`${baseUrl}/faq`);
+    assert.equal(faqRes.status, 200);
+    const faqHtml = await faqRes.text();
+    assert.match(faqHtml, /Atelier Inquiries/);
+  });
+
+  test("GET /void-unknown-page returns HTTP 404 rather than 200", async () => {
+    const res = await fetch(`${baseUrl}/void-unknown-page-nonexistent`);
+    assert.equal(res.status, 404);
+    const html = await res.text();
+    assert.match(html, /Void Coordinate Sequence/);
   });
 });

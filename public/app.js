@@ -220,7 +220,7 @@ function renderCatalog() {
         </div>
         <div class="card-body">
           <div class="card-meta-row">
-            <span class="rating-badge">★ ${product.rating || "4.9"} (${product.reviewsCount || 100})</span>
+            <span class="rating-badge">★ ${product.rating || "4.9"} Atelier Score</span>
             <span class="stock-badge">${product.stockCount || 15} IN STOCK</span>
           </div>
           <h3 class="card-title" onclick="openQuickView('${product.id}')">${product.title}</h3>
@@ -674,17 +674,33 @@ function bindConciergeAndNewsletter() {
   const input = document.getElementById("newsletterEmail");
   const feedback = document.getElementById("newsletterFeedback");
   if (form && input && feedback) {
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const val = input.value.trim();
-      if (!val || !val.includes("@")) {
+      if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
         feedback.style.color = "#ff1744";
         feedback.textContent = "Please enter a valid email address.";
         return;
       }
-      input.value = "";
-      feedback.style.color = "var(--accent-cyan)";
-      feedback.textContent = "Thank you. Exclusive allocation access dispatched to your inbox.";
+      try {
+        const res = await fetch("/api/newsletter", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: val })
+        });
+        const data = await res.json();
+        if (data.success) {
+          input.value = "";
+          feedback.style.color = "var(--accent-cyan)";
+          feedback.textContent = "Subscribed to KRAVØN Atelier Bulletins.";
+        } else {
+          feedback.style.color = "#ff1744";
+          feedback.textContent = data.message || "Subscription could not be processed.";
+        }
+      } catch (err) {
+        feedback.style.color = "#ff1744";
+        feedback.textContent = "Network error. Please try again later.";
+      }
       setTimeout(() => {
         feedback.textContent = "";
       }, 5000);

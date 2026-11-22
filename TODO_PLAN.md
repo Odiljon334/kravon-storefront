@@ -1,22 +1,36 @@
-# KRAVØN Production Hardening & Full Audit Remediation
+# KRAVØN Production Hardening & Full Elevation Plan (V3.0)
 
-- [x] 1. Native Database Persistence: Implement `node:sqlite` for ACID-compliant order and inventory storage (`data/storefront.db`), eliminating volatile in-memory data loss
-- [x] 2. Security Hardening & Secret Sanitation:
-  - Remove all hardcoded API keys, tokens, and personal emails from `server.js` to `.env`
-  - Implement HMAC-MD5 / secret token verification for 2Checkout webhooks (block unauthenticated forge attacks)
-  - Add native HTTP security headers (CSP, X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy)
-  - Add IP rate limiting for API endpoints
-- [x] 3. Business Logic & Input Sanitization:
-  - Reject negative/zero/excessive quantities and invalid payload structures in `/api/checkout`
-  - Prevent double currency conversion in cart state
-- [x] 4. SEO & Standards Compliance:
-  - Create `/robots.txt` and `/sitemap.xml`
-  - Implement full meta descriptions, OpenGraph tags, Twitter Cards, and canonical tags across all HTML pages
-  - Correct heading hierarchy (`<h1>` -> `<h2>` -> `<h3>`)
-- [x] 5. Content & UX Refinement (Kill AI-Slop):
-  - Replace robotic jargon ("Destination Telemetry", "Electronic Mail", "Mobile Telephony", "Total Acquisition") with polished luxury atelier copy
-- [x] 6. Comprehensive Test Suite & Live Verification:
-  - Expand `test/storefront.test.js` to cover database persistence, webhook signature checks, and validation gates
-  - Run all tests and achieve 100% pass (Zero-Comment Rule enforced, 14/14 tests pass)
-- [x] 7. GitHub Push:
-  - Commit all hardened changes and push cleanly to `https://github.com/Odiljon334/kravon-storefront`
+- [x] 1. Database Architecture & Atomic Transactions (`db.js`):
+  - Add `subscribers` table for newsletter email persistence
+  - Wrap `saveOrder` in atomic database transactions (`BEGIN TRANSACTION` / `COMMIT` / `ROLLBACK`)
+  - Add `updateOrderStatus` to save tracking number, carrier and fulfillment metadata
+  - Add helper functions `saveSubscriber` and `getSubscribers`
+  - Enforce Zero-Comment Rule in `db.js`
+- [x] 2. Backend Logic, Validation Authority & Payment Decoupling (`server.js`):
+  - Enforce server catalog authority: reject unknown products/variants (HTTP 400), compute all prices and discounts on server
+  - Decouple CJ fulfillment from checkout creation: checkout creates order as `PENDING_PAYMENT` & `UNFULFILLED` (no premature dropshipping dispatch)
+  - Implement HMAC-SHA256 signature verification and token authentication for `/api/2checkout/webhook`
+  - Implement idempotent payment confirmation workflow that triggers CJ dispatch ONLY upon verified payment
+  - Add sandbox payment simulation endpoint `/api/payment/simulate` for test mode
+  - Add `/api/track` order lookup endpoint returning real-time status and masking PII
+  - Add `/api/newsletter` subscriber endpoint with regex validation and SQLite persistence
+  - Fix postal code mapping in CJ payload (`shippingZip: orderInfo.shippingZip || orderInfo.zip`)
+  - Implement dedicated routes: `/products/:handle`, `/tracking`, `/faq`, `/checkout.html`, and stylized 404 handler
+  - Update `/sitemap.xml` to include all dedicated product URLs, `/tracking`, and `/faq`
+  - Enforce Zero-Comment Rule in `server.js`
+- [x] 3. Frontend Pages & UX Elevation (`public/`):
+  - Build `public/checkout.html`: dedicated payment gateway portal displaying order breakdown, security badges, and payment simulation/gateway redirect
+  - Build `public/tracking.html`: live order telemetry and carrier tracking interface
+  - Build `public/faq.html`: comprehensive atelier FAQ (shipping windows, EU 14-day statutory return rights, materials, customs)
+  - Build `public/404.html`: cyberpunk dark void 404 page
+  - Update `public/checkout-success.html`: real-time order status check (displays "Payment Pending" if unpaid, "Confirmed & Routed" only if paid)
+  - Update `public/app.js`: wire newsletter form to `/api/newsletter`, route checkout to `/checkout.html`, remove artificial claims
+  - Enforce Zero-Comment Rule in `public/app.js` and all frontend files
+- [x] 4. Comprehensive Test Suite Expansion (`test/storefront.test.js`):
+  - Expand test suite to cover catalog validation, atomic orders, payment lifecycle, webhook HMAC, order tracking, and routing (21/21 passing)
+  - Verify 100% tests pass in Node.js test runner
+  - Run Chrome DevTools CDP verification across viewports
+  - Run ruthless zero-comment audit across all code files (100% clean)
+- [x] 5. Git Commit & GitHub Push:
+  - Commit all hardened and elevated files to `main` branch
+  - Push cleanly to `https://github.com/Odiljon334/kravon-storefront`

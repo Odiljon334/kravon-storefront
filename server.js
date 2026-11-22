@@ -1,7 +1,8 @@
 import express from "express";
 import path from "node:path";
+import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { saveOrder, getOrders, getOrderById, updateOrderStatus } from "./db.js";
+import { saveOrder, getOrders, getOrderById, updateOrderStatus, saveSubscriber, getSubscribers } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +20,8 @@ const CJ_BASE_URL = "https://developers.cjdropshipping.com/api2.0/v1";
 const TWOCHECKOUT_SELLER_ID = process.env.TWOCHECKOUT_SELLER_ID || "";
 const TWOCHECKOUT_SECRET_KEY = process.env.TWOCHECKOUT_SECRET_KEY || "";
 const TWOCHECKOUT_MODE = process.env.TWOCHECKOUT_MODE || "SANDBOX";
-const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || "kravon_secure_webhook_secret_2026";
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || (process.env.NODE_ENV === "test" ? "kravon_secure_webhook_secret_2026" : "");
+const ADMIN_KEY = process.env.ADMIN_KEY || (process.env.NODE_ENV === "test" ? "kravon_admin_key_master_2026" : "");
 
 let cjTokenCache = {
   token: process.env.CJ_ACCESS_TOKEN || "",
@@ -233,6 +235,7 @@ async function createCJDropshippingOrder(orderInfo) {
       success: false,
       mode: "fallback_simulation",
       trackingNumber: `CJ-CN-${Math.floor(Math.random() * 8999999 + 1000000)}YQ`,
+      carrier: "CJPacket Sensitive Pro",
       status: "DISPATCHED_TO_HANGZHOU_HUB",
       message: "CJ Token standby"
     };
@@ -247,8 +250,8 @@ async function createCJDropshippingOrder(orderInfo) {
     shippingCity: orderInfo.shippingCity || "New York",
     shippingAddress: orderInfo.shippingAddress || "120 Broadway St",
     shippingCustomerName: orderInfo.customerName || "Kravon Client",
-    shippingPhone: orderInfo.phone || "12125550199",
-    shippingZip: orderInfo.zip || "10005",
+    shippingPhone: orderInfo.shippingPhone || orderInfo.phone || "+12125550199",
+    shippingZip: orderInfo.shippingZip || orderInfo.zip || "10005",
     logisticName: "CJPacket Sensitive Pro",
     products: orderInfo.products.map(p => ({
       vid: p.cjVid || "1525003850212716544",
@@ -272,6 +275,8 @@ async function createCJDropshippingOrder(orderInfo) {
         success: true,
         mode: "live_cj_open_api",
         cjOrderId: res.data,
+        trackingNumber: `CJ-CN-${Math.floor(Math.random() * 8999999 + 1000000)}YQ`,
+        carrier: "CJPacket Sensitive Pro",
         logisticName: "CJPacket Sensitive Pro",
         status: "PROCESSING_IN_CHINA_WAREHOUSE",
         trackingUrl: "https://cjdropshipping.com/my.html#/order-manage/order-list"
@@ -282,6 +287,7 @@ async function createCJDropshippingOrder(orderInfo) {
       mode: "api_fallback",
       error: res.message,
       trackingNumber: `CJ-CN-${Math.floor(Math.random() * 8999999 + 1000000)}YQ`,
+      carrier: "CJPacket Sensitive Pro",
       status: "DISPATCHED_TO_HANGZHOU_HUB"
     };
   } catch (err) {
@@ -290,9 +296,42 @@ async function createCJDropshippingOrder(orderInfo) {
       mode: "error_fallback",
       error: err.message,
       trackingNumber: `CJ-CN-${Math.floor(Math.random() * 8999999 + 1000000)}YQ`,
+      carrier: "CJPacket Sensitive Pro",
       status: "DISPATCHED_TO_HANGZHOU_HUB"
     };
   }
+}
+
+function verifyWebhookAuth(req) {
+  if (!WEBHOOK_SECRET) {
+    return false;
+  }
+
+  const tokenHeader = req.headers["x-webhook-secret"] || req.query.secret;
+  if (tokenHeader && typeof tokenHeader === "string") {
+    if (tokenHeader.length === WEBHOOK_SECRET.length && crypto.timingSafeEqual(Buffer.from(tokenHeader), Buffer.from(WEBHOOK_SECRET))) {
+      return true;
+    }
+  }
+
+  const authHeader = req.headers["authorization"];
+  if (authHeader && typeof authHeader === "string" && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.slice(7);
+    if (token.length === WEBHOOK_SECRET.length && crypto.timingSafeEqual(Buffer.from(token), Buffer.from(WEBHOOK_SECRET))) {
+      return true;
+    }
+  }
+
+  const sigHeader = req.headers["x-2checkout-signature"] || req.headers["x-webhook-signature"];
+  if (sigHeader && typeof sigHeader === "string") {
+    const payloadStr = JSON.stringify(req.body || {});
+    const expectedSig = crypto.createHmac("sha256", WEBHOOK_SECRET).update(payloadStr).digest("hex");
+    if (sigHeader.length === expectedSig.length && crypto.timingSafeEqual(Buffer.from(sigHeader), Buffer.from(expectedSig))) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 app.get("/robots.txt", (req, res) => {
@@ -302,41 +341,49 @@ app.get("/robots.txt", (req, res) => {
 
 app.get("/sitemap.xml", (req, res) => {
   res.type("application/xml");
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  const today = new Date().toISOString().split("T")[0];
+  const productEntries = MOCK_PRODUCTS.map(p => `
+  <url>
+    <loc>https://kravon-archive.com/products/${p.handle}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`).join("");
+
+  const staticEntries = [
+    "",
+    "tracking",
+    "faq",
+    "shipping.html",
+    "refund.html",
+    "privacy.html",
+    "terms.html",
+    "contact.html"
+  ].map(slug => `
+  <url>
+    <loc>https://kravon-archive.com/${slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>${slug === "" ? "1.0" : "0.5"}</priority>
+  </url>`).join("");
+
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://kravon-archive.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
-  <url><loc>https://kravon-archive.com/privacy.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://kravon-archive.com/terms.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://kravon-archive.com/refund.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://kravon-archive.com/shipping.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://kravon-archive.com/contact.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-</urlset>`;
-  res.send(sitemap);
+${staticEntries}
+${productEntries}
+</urlset>`);
 });
 
 app.get("/api/status", (req, res) => {
   res.json({
     status: "online",
     brand: "KRAVØN",
+    aesthetic: "Dark Cyberpunk Anime Luxury",
+    serverTimestamp: new Date().toISOString(),
     currencies: ["USD", "EUR"],
     rates: { USD: 1.0, EUR: 0.92 },
-    catalogCount: MOCK_PRODUCTS.length
-  });
-});
-
-app.get("/api/health", (req, res) => {
-  const allOrders = getOrders(1000);
-  res.json({
-    status: "healthy",
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-    storefront: "KRAVON Atelier",
-    version: "3.2.0",
-    database: "SQLITE_ACID_PERSISTENT",
-    fulfillmentEngine: "CJ_DROPSHIPPING_OPEN_API",
-    cjStatus: cjTokenCache.token ? "ACTIVE" : "STANDBY",
-    productsCount: MOCK_PRODUCTS.length,
-    ordersStored: allOrders.length,
+    catalogCount: MOCK_PRODUCTS.length,
+    shopifyStore: SHOPIFY_STORE_DOMAIN || "autonomous-archive",
     shopifyMode: (SHOPIFY_STORE_DOMAIN && SHOPIFY_STOREFRONT_ACCESS_TOKEN) ? "LIVE_STOREFRONT" : "AUTONOMOUS_HEADLESS"
   });
 });
@@ -358,10 +405,15 @@ app.get("/api/cj/status", async (req, res) => {
 
 app.get("/api/cj/orders", (req, res) => {
   const adminKey = req.headers["x-admin-key"] || req.query.adminKey;
-  const configuredAdminKey = process.env.ADMIN_KEY || "kravon_admin_key_master_2026";
   const allOrders = getOrders(100);
 
-  if (adminKey && adminKey === configuredAdminKey) {
+  if (adminKey) {
+    if (!ADMIN_KEY || adminKey !== ADMIN_KEY) {
+      return res.status(401).json({
+        success: false,
+        error: "Unauthorized: Invalid admin key"
+      });
+    }
     return res.json({
       success: true,
       count: allOrders.length,
@@ -377,7 +429,8 @@ app.get("/api/cj/orders", (req, res) => {
     itemsCount: o.itemsCount,
     totalAmount: o.totalAmount,
     currency: o.currency,
-    status: o.status
+    status: o.status,
+    paymentStatus: o.paymentStatus
   }));
 
   res.json({
@@ -399,8 +452,7 @@ app.get("/api/2checkout/config", (req, res) => {
 });
 
 app.post("/api/2checkout/webhook", async (req, res) => {
-  const secret = req.headers["x-webhook-secret"] || req.headers["authorization"] || req.query.secret;
-  if (!secret || secret !== WEBHOOK_SECRET) {
+  if (!verifyWebhookAuth(req)) {
     return res.status(401).json({
       success: false,
       error: "Unauthorized: Invalid webhook signature or token"
@@ -409,28 +461,182 @@ app.post("/api/2checkout/webhook", async (req, res) => {
 
   const payload = req.body || {};
   const orderId = payload.REFNOEXT || payload.orderId;
-  const status = payload.ORDERSTATUS || payload.status || "COMPLETE";
+  const status = (payload.ORDERSTATUS || payload.status || "COMPLETE").toUpperCase();
 
   if (!orderId) {
     return res.status(400).json({ success: false, error: "Missing order identification" });
   }
 
-  if (status === "COMPLETE" || status === "AUTHAPPROVED") {
-    updateOrderStatus(orderId, "CONFIRMED_AND_ROUTED", "PAID");
-    res.json({
+  const existing = getOrderById(orderId);
+  if (!existing) {
+    return res.status(404).json({ success: false, error: "Order not found" });
+  }
+
+  if (status === "COMPLETE" || status === "AUTHAPPROVED" || status === "PAID") {
+    if (existing.paymentStatus === "PAID") {
+      return res.json({
+        success: true,
+        message: "Order already confirmed (idempotent)",
+        orderId
+      });
+    }
+
+    const cjFulfillment = await createCJDropshippingOrder({
+      orderId: existing.orderId,
+      customerName: existing.customerName,
+      customerEmail: existing.customerEmail,
+      shippingPhone: existing.shippingPhone,
+      shippingAddress: existing.shippingAddress,
+      shippingCountry: existing.shippingCountry,
+      products: existing.items
+    });
+
+    updateOrderStatus(orderId, "CONFIRMED_AND_ROUTED", "PAID", cjFulfillment);
+
+    return res.json({
       success: true,
       message: "2Checkout payment confirmed and routed to warehouse",
-      orderId
-    });
-  } else {
-    updateOrderStatus(orderId, "PAYMENT_PENDING", status);
-    res.json({
-      success: true,
-      message: "Webhook acknowledged",
       orderId,
-      status
+      fulfillment: cjFulfillment
     });
   }
+
+  updateOrderStatus(orderId, "PAYMENT_PENDING", status);
+  res.json({
+    success: true,
+    message: "Webhook acknowledged",
+    orderId,
+    status
+  });
+});
+
+app.post("/api/payment/simulate", async (req, res) => {
+  const { orderId, paymentMethod = "CREDIT_CARD" } = req.body;
+  if (!orderId) {
+    return res.status(400).json({ success: false, error: "Missing orderId parameter" });
+  }
+
+  const order = getOrderById(orderId);
+  if (!order) {
+    return res.status(404).json({ success: false, error: "Order not found" });
+  }
+
+  if (order.paymentStatus === "PAID") {
+    return res.json({
+      success: true,
+      message: "Order already confirmed",
+      orderId,
+      redirectUrl: `/checkout-success.html?orderId=${encodeURIComponent(orderId)}`
+    });
+  }
+
+  const cjFulfillment = await createCJDropshippingOrder({
+    orderId: order.orderId,
+    customerName: order.customerName,
+    customerEmail: order.customerEmail,
+    shippingPhone: order.shippingPhone,
+    shippingAddress: order.shippingAddress,
+    shippingCountry: order.shippingCountry,
+    products: order.items
+  });
+
+  updateOrderStatus(orderId, "CONFIRMED_AND_ROUTED", "PAID", cjFulfillment);
+
+  res.json({
+    success: true,
+    message: "Payment authorized and routed to fulfillment hub",
+    orderId,
+    paymentMethod,
+    fulfillment: cjFulfillment,
+    redirectUrl: `/checkout-success.html?orderId=${encodeURIComponent(orderId)}`
+  });
+});
+
+app.get("/api/track", (req, res) => {
+  const { orderId } = req.query;
+  if (!orderId) {
+    return res.status(400).json({ success: false, error: "Query parameter orderId is required" });
+  }
+
+  const order = getOrderById(orderId.trim());
+  if (!order) {
+    return res.status(404).json({ success: false, error: "Order reference not recognized" });
+  }
+
+  const isPaid = order.paymentStatus === "PAID";
+  const fulfillment = order.fulfillment || {};
+  const trackingNumber = fulfillment.trackingNumber || null;
+  const carrier = fulfillment.carrier || "CJPacket Sensitive Pro";
+
+  const timeline = [
+    {
+      step: "ORDER_CREATED",
+      completed: true,
+      label: "Order Stored in Archival Ledger",
+      desc: "Order specifications and customer payload validated."
+    },
+    {
+      step: "PAYMENT_CONFIRMED",
+      completed: isPaid,
+      active: !isPaid,
+      label: "256-Bit Payment Authorization",
+      desc: isPaid ? "Payment confirmed via cryptographic token." : "Awaiting gateway authorization."
+    },
+    {
+      step: "WAREHOUSE_ROUTING",
+      completed: isPaid && Boolean(trackingNumber),
+      active: isPaid && !trackingNumber,
+      label: "Automated Fulfillment Packaging",
+      desc: isPaid ? `Consignment scheduled with ${carrier}.` : "Queued behind payment clearance."
+    },
+    {
+      step: "AIR_TRANSIT",
+      completed: false,
+      active: false,
+      label: "International Air Freight Transit",
+      desc: "5–11 business days priority air express."
+    },
+    {
+      step: "DELIVERY",
+      completed: false,
+      active: false,
+      label: "Final Destination Handover",
+      desc: "Signature-tracked delivery to registered address."
+    }
+  ];
+
+  res.json({
+    success: true,
+    orderId: order.orderId,
+    timestamp: order.timestamp,
+    paymentStatus: order.paymentStatus,
+    fulfillmentStatus: order.status,
+    shippingCountry: order.shippingCountry,
+    totalAmount: order.totalAmount,
+    currency: order.currency,
+    itemsCount: order.itemsCount,
+    carrier,
+    trackingNumber,
+    items: (order.items || []).map(i => ({
+      title: i.title,
+      quantity: i.quantity,
+      price: i.price
+    })),
+    timeline
+  });
+});
+
+app.post("/api/newsletter", (req, res) => {
+  const { email } = req.body || {};
+  if (!email || typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    return res.status(400).json({ success: false, message: "Valid email address required" });
+  }
+  const result = saveSubscriber(email.trim().toLowerCase());
+  res.json({
+    success: true,
+    message: "Subscribed to KRAVØN Atelier Bulletins",
+    subscriber: result.email
+  });
 });
 
 app.get("/api/categories", (req, res) => {
@@ -502,11 +708,41 @@ app.post("/api/checkout", async (req, res) => {
     return res.status(400).json({ success: false, message: "Cart cannot be empty" });
   }
 
+  const validatedItems = [];
+  let rawSubtotal = 0;
+
   for (const item of items) {
     const qty = Number(item.quantity);
     if (!Number.isInteger(qty) || qty < 1 || qty > 100) {
       return res.status(400).json({ success: false, message: "Invalid item quantity" });
     }
+
+    const matchedProduct = MOCK_PRODUCTS.find(p => p.id === item.id || p.sku === item.id || p.handle === item.id);
+    if (!matchedProduct) {
+      return res.status(400).json({ success: false, message: `Product not found: ${item.id}` });
+    }
+
+    let matchedVariant = null;
+    if (item.variantId) {
+      matchedVariant = matchedProduct.variants.find(v => v.id === item.variantId);
+      if (!matchedVariant) {
+        return res.status(400).json({ success: false, message: `Invalid variant for product ${item.id}` });
+      }
+    } else {
+      matchedVariant = matchedProduct.variants[0];
+    }
+
+    const authoritativePrice = matchedVariant.price;
+    rawSubtotal += (authoritativePrice * qty);
+
+    validatedItems.push({
+      id: matchedProduct.id,
+      title: matchedProduct.title,
+      variantId: matchedVariant.id,
+      cjVid: matchedVariant.cjVid,
+      quantity: qty,
+      price: authoritativePrice
+    });
   }
 
   if (!customerName || typeof customerName !== "string" || !customerName.trim()) {
@@ -538,28 +774,8 @@ app.post("/api/checkout", async (req, res) => {
 
   const orderId = `KR-${Math.floor(Math.random() * 900000 + 100000)}`;
   const rate = currency === "EUR" ? 0.92 : 1.0;
-  const rawSubtotal = items.reduce((sum, item) => {
-    const matched = MOCK_PRODUCTS.find(p => p.id === item.id || p.sku === item.id);
-    const matchedVariant = matched?.variants?.find(v => v.id === item.variantId) || matched?.variants?.[0];
-    const unitPrice = matchedVariant ? matchedVariant.price : (matched ? matched.price : (item.price || 0));
-    const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
-    return sum + (unitPrice * qty);
-  }, 0);
   const totalAmount = rawSubtotal * discountFactor * rate;
   const currencySymbol = currency === "EUR" ? "EUR" : "USD";
-
-  const enrichedProducts = items.map(item => {
-    const matched = MOCK_PRODUCTS.find(p => p.id === item.id || p.sku === item.id);
-    const matchedVariant = matched?.variants?.find(v => v.id === item.variantId) || matched?.variants?.[0];
-    const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
-    return {
-      id: item.id,
-      title: item.title || matched?.title || "Anime Cyberpunk Artifact",
-      cjVid: matchedVariant?.cjVid || "1525003850212716544",
-      quantity: qty,
-      price: item.price
-    };
-  });
 
   const finalName = customerName.trim();
   const finalEmail = customerEmail.trim();
@@ -571,20 +787,6 @@ app.post("/api/checkout", async (req, res) => {
   const finalCountryCode = shippingCountryCode || "US";
   const finalCountry = COUNTRY_NAMES[finalCountryCode] || shippingCountry || "United States";
 
-  const cjFulfillment = await createCJDropshippingOrder({
-    orderId,
-    customerName: finalName,
-    customerEmail: finalEmail,
-    phone: finalPhone,
-    shippingAddress: finalAddress,
-    shippingCity: finalCity,
-    shippingProvince: finalProvince,
-    shippingZip: finalZip,
-    shippingCountryCode: finalCountryCode,
-    shippingCountry: finalCountry,
-    products: enrichedProducts
-  });
-
   const orderRecord = {
     orderId,
     timestamp: new Date().toISOString(),
@@ -593,19 +795,19 @@ app.post("/api/checkout", async (req, res) => {
     shippingPhone: finalPhone,
     shippingAddress: `${finalAddress}, ${finalCity}, ${finalProvince} ${finalZip}, ${finalCountry}`,
     shippingCountry: finalCountry,
-    itemsCount: items.length,
+    itemsCount: validatedItems.length,
     subtotal: parseFloat((rawSubtotal * rate).toFixed(2)),
     totalAmount: parseFloat(totalAmount.toFixed(2)),
     currency: currencySymbol,
     discount: appliedDiscount || "NONE",
-    fulfillment: cjFulfillment,
-    status: cjFulfillment.success ? "PAID_AND_CONFIRMED_BY_CJ" : "PAID_AND_DISPATCHED_TO_CJ",
-    paymentStatus: "PENDING_GATEWAY"
+    fulfillment: null,
+    status: "UNFULFILLED",
+    paymentStatus: "PENDING_PAYMENT"
   };
 
-  saveOrder(orderRecord, enrichedProducts);
+  saveOrder(orderRecord, validatedItems);
 
-  const checkoutUrl = `/checkout-success.html?orderId=${orderId}&total=${totalAmount.toFixed(2)}&currency=${currencySymbol}`;
+  const checkoutUrl = `/checkout.html?orderId=${orderId}&amount=${totalAmount.toFixed(2)}&currency=${currencySymbol}`;
 
   res.json({
     success: true,
@@ -615,10 +817,101 @@ app.post("/api/checkout", async (req, res) => {
     subtotal: parseFloat((rawSubtotal * rate).toFixed(2)),
     totalAmount: parseFloat(totalAmount.toFixed(2)),
     currency: currencySymbol,
-    fulfillment: cjFulfillment,
+    fulfillment: null,
     order: orderRecord,
-    checkoutUrl
+    checkoutUrl,
+    paymentStatus: "PENDING_PAYMENT"
   });
+});
+
+app.get("/products/:id", (req, res) => {
+  const { id } = req.params;
+  const p = MOCK_PRODUCTS.find(item => item.id === id || item.handle === id || item.sku === id);
+  if (!p) {
+    return res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
+  }
+
+  const primaryVariant = p.variants[0];
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": p.title,
+    "image": p.images,
+    "description": p.description,
+    "sku": p.sku,
+    "brand": {
+      "@type": "Brand",
+      "name": "KRAVØN"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `https://kravon-archive.com/products/${p.handle}`,
+      "priceCurrency": "USD",
+      "price": p.price.toFixed(2),
+      "availability": "https://schema.org/InStock"
+    }
+  });
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${p.title} — KRAVØN Atelier</title>
+  <meta name="description" content="${p.tagline}">
+  <link rel="canonical" href="https://kravon-archive.com/products/${p.handle}">
+  <meta property="og:title" content="${p.title} — KRAVØN">
+  <meta property="og:description" content="${p.tagline}">
+  <meta property="og:image" content="${p.images[0]}">
+  <meta property="og:type" content="product">
+  <script type="application/ld+json">${schemaJson}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="brand-logo">KRAVØN</a>
+      <nav class="nav-links">
+        <a href="/">Catalog</a>
+        <a href="/tracking">Live Telemetry</a>
+        <a href="/faq">FAQ</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page-container" style="max-width: 1000px; margin: 40px auto; padding: 0 20px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+      <div>
+        <img src="${p.images[0]}" alt="${p.title}" style="width: 100%; border-radius: 12px; border: 1px solid #222630;">
+      </div>
+      <div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #00e5ff; margin-bottom: 8px;">${p.sku} · ${p.category}</div>
+        <h1 style="font-size: 26px; font-weight: 700; color: #ffffff; margin-bottom: 12px;">${p.title}</h1>
+        <div style="font-size: 22px; font-weight: 700; color: #00e5ff; margin-bottom: 20px;">$${p.price.toFixed(2)} USD</div>
+        <p style="color: #9ca3af; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">${p.description}</p>
+        <div style="background: #111318; border: 1px solid #222630; border-radius: 8px; padding: 16px; margin-bottom: 24px; font-size: 13px;">
+          <div style="margin-bottom: 6px;"><strong>Materials:</strong> <span style="color: #d1d5db;">${p.materials}</span></div>
+          <div style="margin-bottom: 6px;"><strong>Weight / Dimensions:</strong> <span style="color: #d1d5db;">${p.weight} · ${p.dimensions}</span></div>
+          <div><strong>Atelier Origin:</strong> <span style="color: #d1d5db;">${p.origin}</span></div>
+        </div>
+        <a href="/" style="display: inline-block; background: #00e5ff; color: #000000; font-weight: 700; padding: 14px 28px; border-radius: 8px; text-decoration: none; text-transform: uppercase; font-size: 13px; letter-spacing: 0.05em;">View in Main Storefront</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>`;
+
+  res.send(html);
+});
+
+app.get("/tracking", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "tracking.html"));
+});
+
+app.get("/faq", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "faq.html"));
 });
 
 app.use("/api", (req, res) => {
@@ -629,8 +922,12 @@ app.use("/api", (req, res) => {
   });
 });
 
-app.get("*", (req, res) => {
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
 });
 
 export { app };

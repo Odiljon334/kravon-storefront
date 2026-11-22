@@ -3,157 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acquisition Confirmed — KRAVØN</title>
-  <link rel="stylesheet" href="/style.css">
+  <title>KRAVØN — Order Telemetry & Archive Receipt</title>
+  <meta name="description" content="Verified acquisition receipt and dispatch telemetry from the KRAVØN archival fulfillment engine.">
+  <link rel="canonical" href="https://kravon-archive.com/checkout-success.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Space Grotesk', sans-serif;
+    }
     body {
-      background-color: #0b0c0e !important;
-      color: #ffffff !important;
-      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      background: #0a0b0e;
+      color: #e5e7eb;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
-      margin: 0;
     }
     .receipt-card {
-      background: #15171c;
-      border: 1px solid #323642;
-      border-radius: 14px;
-      padding: 40px 32px;
-      max-width: 540px;
+      background: #111318;
+      border: 1px solid #222630;
+      border-radius: 12px;
+      max-width: 520px;
       width: 100%;
-      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7);
+      padding: 32px 28px;
       text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
     }
     .check-icon {
-      width: 56px;
-      height: 56px;
+      width: 52px;
+      height: 52px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border: 1px solid #10b981;
       border-radius: 50%;
-      background: rgba(34, 197, 94, 0.15);
-      border: 1.5px solid #22c55e;
-      color: #22c55e;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 18px;
+      margin: 0 auto 20px auto;
+    }
+    .pending-icon {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border-color: #f59e0b;
     }
     .receipt-title {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
       color: #ffffff;
-      margin-bottom: 6px;
-      letter-spacing: -0.02em;
+      margin-bottom: 8px;
     }
     .receipt-desc {
       font-size: 13px;
-      color: #9ca3af;
+      color: #8b92a2;
       line-height: 1.5;
-      margin-bottom: 22px;
+      margin-bottom: 24px;
     }
     .receipt-box {
-      background: #1c1f26;
-      border: 1px solid #3a3f4d;
-      border-radius: 10px;
-      padding: 18px 20px;
+      background: #0d0e12;
+      border: 1px solid #1c202a;
+      border-radius: 8px;
+      padding: 16px;
       text-align: left;
       margin-bottom: 20px;
+      font-size: 13px;
     }
     .receipt-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      font-size: 13px;
+      margin-bottom: 10px;
     }
     .receipt-label {
-      color: #9ca3af;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      color: #6b7280;
     }
     .receipt-value {
-      color: #ffffff;
+      color: #d1d5db;
+      font-weight: 500;
       font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 13px;
-      text-align: right;
-      max-width: 60%;
-      word-break: break-word;
     }
     .status-badge {
-      background: rgba(34, 197, 94, 0.15);
-      color: #4ade80;
-      border: 1px solid rgba(34, 197, 94, 0.4);
+      font-size: 10px;
       padding: 3px 8px;
-      border-radius: 5px;
+      border-radius: 4px;
       font-weight: 700;
-      font-size: 11px;
-      font-family: 'JetBrains Mono', monospace;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
+      border: 1px solid;
+    }
+    .status-paid {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border-color: #10b981;
+    }
+    .status-pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border-color: #f59e0b;
     }
     .total-row {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
-      border-top: 1px solid #3a3f4d;
-      padding-top: 14px;
+      padding-top: 12px;
       margin-top: 6px;
-    }
-    .total-label {
-      color: #ffffff;
+      border-top: 1px solid #222630;
       font-size: 15px;
       font-weight: 700;
     }
     .total-amount {
-      color: #f5f4ef;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
+      color: #00e5ff;
     }
     .logistics-card {
-      background: #111317;
-      border: 1px solid #2d313d;
+      background: #141720;
       border-left: 3px solid #00e5ff;
-      border-radius: 8px;
-      padding: 14px 16px;
-      margin-bottom: 22px;
+      border-radius: 4px;
+      padding: 12px 14px;
       text-align: left;
       font-size: 12px;
-      line-height: 1.5;
-      color: #d1d5db;
+      color: #9ca3af;
+      margin-bottom: 24px;
+      line-height: 1.4;
     }
-    .logistics-card strong {
-      color: #00e5ff;
-      display: block;
-      margin-bottom: 4px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .btn-return {
+    .btn-action-primary {
       display: block;
       width: 100%;
-      background: #c89666;
-      color: #0b0c0e;
-      padding: 13px;
+      background: #00e5ff;
+      color: #000000;
+      text-decoration: none;
+      padding: 12px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 700;
-      text-align: center;
-      text-decoration: none;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
       box-sizing: border-box;
       transition: opacity 0.15s ease;
+      cursor: pointer;
+      border: none;
     }
-    .btn-return:hover {
+    .btn-action-primary:hover {
       opacity: 0.9;
     }
-    .btn-print {
+    .btn-secondary {
       display: block;
       width: 100%;
       margin-top: 10px;
@@ -166,9 +163,10 @@
       font-weight: 600;
       cursor: pointer;
       box-sizing: border-box;
+      text-decoration: none;
       transition: border-color 0.15s ease, color 0.15s ease;
     }
-    .btn-print:hover {
+    .btn-secondary:hover {
       border-color: #6b7280;
       color: #ffffff;
     }
@@ -176,16 +174,14 @@
 </head>
 <body>
   <div class="receipt-card">
-    <div class="check-icon">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <div id="iconBox" class="check-icon">
+      <svg id="iconSvg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <path d="M20 6L9 17l-5-5"/>
       </svg>
     </div>
     
-    <h1 class="receipt-title">Order Confirmed & Routed</h1>
-    <p class="receipt-desc">
-      Your acquisition has been confirmed and submitted directly to the fulfillment center.
-    </p>
+    <h1 id="receiptTitle" class="receipt-title">Order Telemetry</h1>
+    <p id="receiptDesc" class="receipt-desc">Loading telemetry verification from archival ledger...</p>
 
     <div class="receipt-box">
       <div class="receipt-row">
@@ -193,48 +189,108 @@
         <strong id="displayOrderId" class="receipt-value">#KR-000000</strong>
       </div>
       <div class="receipt-row">
-        <span class="receipt-label">Customer:</span>
-        <span id="displayCustomer" class="receipt-value">Valued Client</span>
-      </div>
-      <div class="receipt-row">
         <span class="receipt-label">Destination:</span>
-        <span id="displayDestination" class="receipt-value">Global Destination</span>
+        <span id="displayDestination" class="receipt-value">Global Hub</span>
       </div>
       <div class="receipt-row">
-        <span class="receipt-label">Warehouse Status:</span>
-        <span id="displayStatus" class="status-badge">CHINA HUB DISPATCHED</span>
+        <span class="receipt-label">Payment Status:</span>
+        <span id="displayPaymentStatus" class="status-badge status-pending">PENDING</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-label">Fulfillment State:</span>
+        <span id="displayFulfillmentStatus" class="status-badge status-pending">UNFULFILLED</span>
       </div>
       <div class="total-row">
-        <span class="total-label">Total Paid:</span>
+        <span id="totalLabel" class="total-label">Total Amount:</span>
         <strong id="displayTotal" class="total-amount">$0.00</strong>
       </div>
     </div>
 
-    <div class="logistics-card">
-      <strong>CJ Dropshipping Fulfillment Engine</strong>
-      <span>Carrier: <strong>CJPacket Sensitive Pro</strong> (5-11 business days). Package dispatched from Shenzhen / Yiwu automated warehouse.</span>
+    <div id="logisticsNotice" class="logistics-card">
+      <strong id="logisticsTitle">Automated Dispatch Engine</strong>
+      <span id="logisticsBody">Shipments are prepared via CJPacket Sensitive Pro upon payment confirmation.</span>
     </div>
 
-    <a href="/" class="btn-return">Return to Storefront</a>
-    <button onclick="window.print()" class="btn-print">Print Archive Receipt</button>
+    <div id="actionContainer">
+      <a href="/" class="btn-action-primary">Return to Storefront</a>
+    </div>
+    <a id="btnTrackLink" href="/tracking" class="btn-secondary">Track Telemetry in Real-Time</a>
   </div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const orderId = params.get("orderId") || "KR-" + Math.floor(Math.random() * 900000 + 100000);
-    const total = params.get("total") || "0.00";
-    const currency = params.get("currency") || "USD";
-    const symbol = currency === "EUR" ? "€" : "$";
-    const name = params.get("name") || "Valued Client";
-    const city = params.get("city") || "";
-    const country = params.get("country") || "US";
-    const cjStatus = params.get("cjStatus") || "PROCESSING_IN_CHINA_WAREHOUSE";
-    
-    document.getElementById("displayOrderId").textContent = orderId.startsWith("#") ? orderId : "#" + orderId;
-    document.getElementById("displayCustomer").textContent = name;
-    document.getElementById("displayDestination").textContent = (city ? city + ", " + country : "Direct Worldwide Delivery");
-    document.getElementById("displayStatus").textContent = cjStatus.replace(/_/g, " ");
-    document.getElementById("displayTotal").textContent = symbol + parseFloat(total).toFixed(2);
+    const orderId = params.get("orderId");
+
+    async function syncReceipt() {
+      if (!orderId) {
+        document.getElementById("receiptTitle").textContent = "Archive Receipt";
+        document.getElementById("receiptDesc").textContent = "No reference identifier passed in telemetry header.";
+        return;
+      }
+
+      document.getElementById("displayOrderId").textContent = "#" + orderId;
+      document.getElementById("btnTrackLink").href = "/tracking?orderId=" + encodeURIComponent(orderId);
+
+      try {
+        const res = await fetch("/api/track?orderId=" + encodeURIComponent(orderId));
+        const data = await res.json();
+
+        if (data.success) {
+          const isPaid = data.paymentStatus === "PAID";
+          const symbol = data.currency === "EUR" ? "€" : "$";
+          document.getElementById("displayTotal").textContent = symbol + Number(data.totalAmount).toFixed(2);
+          document.getElementById("displayDestination").textContent = data.shippingCountry || "Global Hub";
+
+          const payBadge = document.getElementById("displayPaymentStatus");
+          const fulBadge = document.getElementById("displayFulfillmentStatus");
+          const iconBox = document.getElementById("iconBox");
+
+          if (isPaid) {
+            payBadge.className = "status-badge status-paid";
+            payBadge.textContent = "PAID & VERIFIED";
+
+            fulBadge.className = "status-badge status-paid";
+            fulBadge.textContent = data.fulfillmentStatus || "ROUTED TO WAREHOUSE";
+
+            iconBox.className = "check-icon";
+            iconBox.innerHTML = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>';
+
+            document.getElementById("receiptTitle").textContent = "Acquisition Verified & Routed";
+            document.getElementById("receiptDesc").textContent = "Payment authorized. Your order has been registered and scheduled for air cargo dispatch.";
+            document.getElementById("totalLabel").textContent = "Total Paid:";
+
+            if (data.trackingNumber) {
+              document.getElementById("logisticsBody").innerHTML = `Consignment: <strong>${data.trackingNumber}</strong> via <strong>${data.carrier || "CJPacket"}</strong>. Dispatch active.`;
+            } else {
+              document.getElementById("logisticsBody").textContent = "Order queued for automated packaging in Hangzhou / Shenzhen logistics hub.";
+            }
+
+            document.getElementById("actionContainer").innerHTML = '<a href="/" class="btn-action-primary">Return to Storefront</a>';
+          } else {
+            payBadge.className = "status-badge status-pending";
+            payBadge.textContent = "PAYMENT PENDING";
+
+            fulBadge.className = "status-badge status-pending";
+            fulBadge.textContent = "AWAITING AUTHORIZATION";
+
+            iconBox.className = "check-icon pending-icon";
+            iconBox.innerHTML = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
+
+            document.getElementById("receiptTitle").textContent = "Authorization Required";
+            document.getElementById("receiptDesc").textContent = "Your acquisition details have been stored. Complete payment authorization to initiate warehouse packaging.";
+            document.getElementById("totalLabel").textContent = "Total Due:";
+
+            document.getElementById("actionContainer").innerHTML = `
+              <a href="/checkout.html?orderId=${encodeURIComponent(orderId)}" class="btn-action-primary">Proceed to Payment Gateway</a>
+            `;
+          }
+        }
+      } catch (err) {
+        document.getElementById("receiptDesc").textContent = "Telemetry synchronization unavailable. Reference logged.";
+      }
+    }
+
+    syncReceipt();
   </script>
 </body>
 </html>

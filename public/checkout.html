@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KRAVØN — Secure Checkout & Payment Gateway</title>
+  <meta name="description" content="Secure payment gateway portal for KRAVØN high-spec cyberpunk and anime artifacts. 256-bit encrypted checkout with worldwide insured routing.">
+  <link rel="canonical" href="https://kravon-archive.com/checkout.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .checkout-wrap {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 32px;
+    }
+    @media (max-width: 768px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .checkout-card {
+      background: #111318;
+      border: 1px solid #222630;
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .checkout-card h2 {
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #00e5ff;
+      margin-bottom: 20px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #1c202a;
+      font-size: 13px;
+    }
+    .order-total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 16px 0;
+      margin-top: 10px;
+      border-top: 1px solid #333a4d;
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .gateway-option {
+      border: 1px solid #222630;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #0d0e12;
+    }
+    .gateway-option:hover, .gateway-option.active {
+      border-color: #00e5ff;
+      background: rgba(0, 229, 255, 0.04);
+    }
+    .gateway-option h3 {
+      font-size: 14px;
+      color: #ffffff;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .gateway-option p {
+      font-size: 11px;
+      color: #8b92a2;
+      line-height: 1.4;
+    }
+    .btn-pay-action {
+      width: 100%;
+      background: #00e5ff;
+      color: #000000;
+      border: none;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: opacity 0.2s ease, transform 0.1s ease;
+    }
+    .btn-pay-action:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+    .btn-pay-action:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .security-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      font-size: 11px;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .security-badge svg {
+      color: #10b981;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="brand-logo">KRAVØN</a>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #10b981; display: flex; align-items: center; gap: 6px;">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+        256-Bit SSL Encrypted
+      </div>
+    </div>
+  </header>
+
+  <main class="checkout-wrap">
+    <div class="checkout-grid">
+      <div class="checkout-card">
+        <h2>Acquisition Summary</h2>
+        <div id="orderItemsContainer">
+          <div style="color: #6b7280; font-size: 13px;">Loading order specifications...</div>
+        </div>
+        <div class="order-total-row">
+          <span>Amount Payable</span>
+          <span id="displayPayableAmount">$0.00</span>
+        </div>
+        <div style="margin-top: 16px; font-size: 12px; color: #8b92a2; line-height: 1.6;">
+          <div><strong>Order ID:</strong> <span id="displayOrderId" style="color: #ffffff; font-family: 'JetBrains Mono', monospace;">#KR-000000</span></div>
+          <div><strong>Destination:</strong> <span id="displayDestination" style="color: #ffffff;">International Hub</span></div>
+          <div><strong>Fulfillment Engine:</strong> CJPacket Sensitive Pro</div>
+        </div>
+      </div>
+
+      <div class="checkout-card">
+        <h2>Secure Payment Processing</h2>
+        <div class="gateway-option active" data-method="CREDIT_CARD">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+            Credit / Debit Card (Visa, Mastercard, Amex)
+          </h3>
+          <p>Instant tokenized processing. Card details are processed directly through 256-bit encrypted gateway endpoints and never stored on KRAVØN servers.</p>
+        </div>
+
+        <div class="gateway-option" data-method="APPLE_PAY">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Apple Pay / Google Pay Direct
+          </h3>
+          <p>Biometric single-tap payment authorization via device-bound secure element.</p>
+        </div>
+
+        <button id="btnAuthorizePayment" class="btn-pay-action">
+          Authorize & Route Fulfillment
+        </button>
+
+        <div id="paymentFeedback" style="display: none; margin-top: 14px; font-size: 13px; font-family: 'JetBrains Mono', monospace;"></div>
+
+        <div class="security-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          PCI-DSS Level 1 Compliant · EBU R128 · Zero-Risk Guarantee
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("orderId");
+
+    let currentOrder = null;
+
+    async function loadOrder() {
+      if (!orderId) {
+        document.getElementById("orderItemsContainer").innerHTML = '<div style="color: #ef4444; font-size: 13px;">No order reference provided. Please return to the storefront.</div>';
+        document.getElementById("btnAuthorizePayment").disabled = true;
+        return;
+      }
+
+      document.getElementById("displayOrderId").textContent = "#" + orderId;
+
+      try {
+        const res = await fetch("/api/track?orderId=" + encodeURIComponent(orderId));
+        const data = await res.json();
+        if (data.success) {
+          currentOrder = data;
+          document.getElementById("displayPayableAmount").textContent = (data.currency === "EUR" ? "€" : "$") + Number(data.totalAmount).toFixed(2);
+          document.getElementById("displayDestination").textContent = data.shippingCountry || "International Hub";
+
+          let html = "";
+          if (data.items && data.items.length > 0) {
+            data.items.forEach(it => {
+              html += `
+                <div class="order-row">
+                  <span>${it.title || "KRAVØN Artifact"} × ${it.quantity}</span>
+                  <strong>${(data.currency === "EUR" ? "€" : "$") + (Number(it.price) * Number(it.quantity)).toFixed(2)}</strong>
+                </div>
+              `;
+            });
+          } else {
+            html = `
+              <div class="order-row">
+                <span>Selected Items (${data.itemsCount})</span>
+                <strong>${(data.currency === "EUR" ? "€" : "$") + Number(data.totalAmount).toFixed(2)}</strong>
+              </div>
+            `;
+          }
+          document.getElementById("orderItemsContainer").innerHTML = html;
+
+          if (data.paymentStatus === "PAID") {
+            window.location.href = "/checkout-success.html?orderId=" + encodeURIComponent(orderId);
+          }
+        } else {
+          document.getElementById("orderItemsContainer").innerHTML = '<div style="color: #ef4444; font-size: 13px;">Order not found in database.</div>';
+          document.getElementById("btnAuthorizePayment").disabled = true;
+        }
+      } catch (err) {
+        document.getElementById("orderItemsContainer").innerHTML = '<div style="color: #ef4444; font-size: 13px;">Telemetry connection failed.</div>';
+      }
+    }
+
+    document.querySelectorAll(".gateway-option").forEach(opt => {
+      opt.addEventListener("click", () => {
+        document.querySelectorAll(".gateway-option").forEach(o => o.classList.remove("active"));
+        opt.classList.add("active");
+      });
+    });
+
+    document.getElementById("btnAuthorizePayment").addEventListener("click", async () => {
+      const btn = document.getElementById("btnAuthorizePayment");
+      const feedback = document.getElementById("paymentFeedback");
+      btn.disabled = true;
+      btn.textContent = "Processing Authorization...";
+      feedback.style.display = "block";
+      feedback.style.color = "#00e5ff";
+      feedback.textContent = "Verifying cryptographic token with gateway...";
+
+      try {
+        const res = await fetch("/api/payment/simulate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: orderId,
+            paymentMethod: document.querySelector(".gateway-option.active")?.dataset.method || "CREDIT_CARD"
+          })
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          feedback.style.color = "#10b981";
+          feedback.textContent = "Payment authorized. Routing order to CJ fulfillment hub...";
+          setTimeout(() => {
+            window.location.href = result.redirectUrl || ("/checkout-success.html?orderId=" + encodeURIComponent(orderId));
+          }, 800);
+        } else {
+          feedback.style.color = "#ef4444";
+          feedback.textContent = result.error || "Payment authorization failed.";
+          btn.disabled = false;
+          btn.textContent = "Authorize & Route Fulfillment";
+        }
+      } catch (err) {
+        feedback.style.color = "#ef4444";
+        feedback.textContent = "Gateway communication error. Please try again.";
+        btn.disabled = false;
+        btn.textContent = "Authorize & Route Fulfillment";
+      }
+    });
+
+    loadOrder();
+  </script>
+</body>
+</html>

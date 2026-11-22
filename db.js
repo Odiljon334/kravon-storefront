@@ -1,6 +1,6 @@
 import { DatabaseSync } from "node:sqlite";
-import fs from "node:fs";
 import path from "node:path";
+import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,9 +31,9 @@ db.exec(`
     total_amount REAL DEFAULT 0,
     currency TEXT DEFAULT 'USD',
     discount TEXT DEFAULT 'NONE',
-    fulfillment_status TEXT DEFAULT 'PENDING',
+    fulfillment_status TEXT DEFAULT 'UNFULFILLED',
     fulfillment_json TEXT,
-    payment_status TEXT DEFAULT 'PENDING'
+    payment_status TEXT DEFAULT 'PENDING_PAYMENT'
   );
 
   CREATE TABLE IF NOT EXISTS order_items (
@@ -48,8 +48,16 @@ db.exec(`
     FOREIGN KEY(order_id) REFERENCES orders(order_id) ON DELETE CASCADE
   );
 
+  CREATE TABLE IF NOT EXISTS subscribers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    timestamp TEXT NOT NULL,
+    source TEXT DEFAULT 'storefront'
+  );
+
   CREATE INDEX IF NOT EXISTS idx_orders_timestamp ON orders(timestamp DESC);
   CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
+  CREATE INDEX IF NOT EXISTS idx_subscribers_email ON subscribers(email);
 `);
 
 export function saveOrder(order, items = []) {
@@ -68,34 +76,41 @@ export function saveOrder(order, items = []) {
     ) VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
-  insertOrder.run(
-    order.orderId,
-    order.timestamp,
-    order.customerName,
-    order.customerEmail,
-    order.shippingPhone,
-    order.shippingAddress,
-    order.shippingCountry,
-    order.itemsCount,
-    order.subtotal,
-    order.totalAmount,
-    order.currency,
-    order.discount,
-    order.status,
-    JSON.stringify(order.fulfillment || {}),
-    order.paymentStatus || "PENDING"
-  );
-
-  for (const item of items) {
-    insertItem.run(
+  db.exec("BEGIN TRANSACTION");
+  try {
+    insertOrder.run(
       order.orderId,
-      item.id,
-      item.variantId || null,
-      item.title,
-      item.quantity,
-      item.price,
-      item.cjVid || null
+      order.timestamp,
+      order.customerName,
+      order.customerEmail,
+      order.shippingPhone,
+      order.shippingAddress,
+      order.shippingCountry,
+      order.itemsCount,
+      order.subtotal,
+      order.totalAmount,
+      order.currency,
+      order.discount,
+      order.status || "UNFULFILLED",
+      JSON.stringify(order.fulfillment || {}),
+      order.paymentStatus || "PENDING_PAYMENT"
     );
+
+    for (const item of items) {
+      insertItem.run(
+        order.orderId,
+        item.id,
+        item.variantId || null,
+        item.title,
+        item.quantity,
+        item.price,
+        item.cjVid || null
+      );
+    }
+    db.exec("COMMIT");
+  } catch (err) {
+    db.exec("ROLLBACK");
+    throw err;
   }
 
   return order;
@@ -165,14 +180,42 @@ export function getOrderById(orderId) {
   };
 }
 
-export function updateOrderStatus(orderId, fulfillmentStatus, paymentStatus) {
-  const update = db.prepare(`
-    UPDATE orders
-    SET fulfillment_status = COALESCE(?, fulfillment_status),
-        payment_status = COALESCE(?, payment_status)
-    WHERE order_id = ?
+export function updateOrderStatus(orderId, fulfillmentStatus, paymentStatus, fulfillmentJson = null) {
+  if (fulfillmentJson) {
+    const update = db.prepare(`
+      UPDATE orders
+      SET fulfillment_status = COALESCE(?, fulfillment_status),
+          payment_status = COALESCE(?, payment_status),
+          fulfillment_json = COALESCE(?, fulfillment_json)
+      WHERE order_id = ?
+    `);
+    update.run(fulfillmentStatus || null, paymentStatus || null, JSON.stringify(fulfillmentJson), orderId);
+  } else {
+    const update = db.prepare(`
+      UPDATE orders
+      SET fulfillment_status = COALESCE(?, fulfillment_status),
+          payment_status = COALESCE(?, payment_status)
+      WHERE order_id = ?
+    `);
+    update.run(fulfillmentStatus || null, paymentStatus || null, orderId);
+  }
+}
+
+export function saveSubscriber(email, source = "storefront") {
+  const stmt = db.prepare(`
+    INSERT INTO subscribers (email, timestamp, source)
+    VALUES (?, ?, ?)
+    ON CONFLICT(email) DO UPDATE SET timestamp = excluded.timestamp
   `);
-  update.run(fulfillmentStatus || null, paymentStatus || null, orderId);
+  stmt.run(email, new Date().toISOString(), source);
+  return { email, status: "subscribed" };
+}
+
+export function getSubscribers() {
+  const stmt = db.prepare(`
+    SELECT * FROM subscribers ORDER BY timestamp DESC
+  `);
+  return stmt.all();
 }
 
 export function closeDatabase() {

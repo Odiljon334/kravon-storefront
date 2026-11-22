@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KRAVØN — Live Order Tracking & Dispatch Telemetry</title>
+  <meta name="description" content="Track your KRAVØN order in real time. Direct telemetry from Shenzhen automated distribution hub to international carrier handoff.">
+  <link rel="canonical" href="https://kravon-archive.com/tracking">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .tracking-page {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .track-search-card {
+      background: #111318;
+      border: 1px solid #222630;
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 30px;
+    }
+    .track-search-card h1 {
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .track-search-card p {
+      color: #8b92a2;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+    .track-form {
+      display: flex;
+      gap: 12px;
+    }
+    @media (max-width: 600px) {
+      .track-form {
+        flex-direction: column;
+      }
+    }
+    .track-input {
+      flex: 1;
+      background: #0d0e12;
+      border: 1px solid #2b303c;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .track-input:focus {
+      border-color: #00e5ff;
+    }
+    .track-btn {
+      background: #00e5ff;
+      color: #000000;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    .track-btn:hover {
+      opacity: 0.9;
+    }
+    .timeline-card {
+      background: #111318;
+      border: 1px solid #222630;
+      border-radius: 12px;
+      padding: 28px;
+      display: none;
+    }
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #1c202a;
+      margin-bottom: 24px;
+    }
+    .timeline-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+    }
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-marker {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      background: #1f2430;
+      color: #6b7280;
+      border: 2px solid #2b3242;
+    }
+    .step-marker.active {
+      background: rgba(0, 229, 255, 0.15);
+      color: #00e5ff;
+      border-color: #00e5ff;
+    }
+    .step-marker.done {
+      background: #10b981;
+      color: #000000;
+      border-color: #10b981;
+    }
+    .step-content h4 {
+      font-size: 14px;
+      color: #ffffff;
+      margin-bottom: 2px;
+    }
+    .step-content p {
+      font-size: 12px;
+      color: #8b92a2;
+    }
+    .tracking-code-pill {
+      font-family: 'JetBrains Mono', monospace;
+      background: #0d0e12;
+      border: 1px solid #2b303c;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #00e5ff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="brand-logo">KRAVØN</a>
+      <nav class="nav-links">
+        <a href="/">Catalog</a>
+        <a href="/tracking" style="color: #00e5ff;">Live Telemetry</a>
+        <a href="/faq">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tracking-page">
+    <div class="track-search-card">
+      <h1>Live Order Telemetry</h1>
+      <p>Enter your 6-digit reference identifier (#KR-XXXXXX) to monitor real-time fulfillment telemetry from the automated assembly hub.</p>
+      <form id="trackForm" class="track-form" onsubmit="event.preventDefault(); executeTracking();">
+        <input type="text" id="trackInput" class="track-input" placeholder="e.g. KR-481920" required autocomplete="off" autocorrect="off">
+        <button type="submit" class="track-btn">Track Order</button>
+      </form>
+    </div>
+
+    <div id="timelineCard" class="timeline-card">
+      <div class="timeline-header">
+        <div>
+          <div style="font-size: 12px; color: #8b92a2; text-transform: uppercase; letter-spacing: 0.05em;">Order Reference</div>
+          <strong id="displayTrackingId" style="font-size: 18px; font-family: 'JetBrains Mono', monospace; color: #00e5ff;">#KR-000000</strong>
+        </div>
+        <div>
+          <span id="displayPaymentBadge" class="status-badge">PAYMENT PENDING</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <div id="carrierBox" style="display: none; margin-bottom: 16px;">
+          <div style="font-size: 12px; color: #8b92a2; margin-bottom: 6px;">Carrier Consignment:</div>
+          <div class="tracking-code-pill">
+            <span id="displayTrackingCode">CJ-CN-0000000YQ</span>
+            <span id="carrierName" style="color: #9ca3af;">(CJPacket Sensitive Pro)</span>
+          </div>
+        </div>
+        <div id="orderMetaSummary" style="font-size: 12px; color: #8b92a2; line-height: 1.6;"></div>
+      </div>
+
+      <div id="stepsContainer" class="timeline-steps"></div>
+    </div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const initialOrder = params.get("orderId");
+    if (initialOrder) {
+      document.getElementById("trackInput").value = initialOrder;
+      executeTracking();
+    }
+
+    async function executeTracking() {
+      const orderId = document.getElementById("trackInput").value.trim().replace(/^#/, "");
+      if (!orderId) return;
+
+      const card = document.getElementById("timelineCard");
+      card.style.display = "block";
+      document.getElementById("displayTrackingId").textContent = "#" + orderId;
+
+      try {
+        const res = await fetch("/api/track?orderId=" + encodeURIComponent(orderId));
+        const data = await res.json();
+
+        if (!data.success) {
+          document.getElementById("stepsContainer").innerHTML = `
+            <div style="color: #ef4444; font-size: 13px; font-family: 'JetBrains Mono', monospace;">
+              Order reference not recognized. Please confirm your order receipt number.
+            </div>
+          `;
+          document.getElementById("carrierBox").style.display = "none";
+          document.getElementById("orderMetaSummary").innerHTML = "";
+          return;
+        }
+
+        const badge = document.getElementById("displayPaymentBadge");
+        if (data.paymentStatus === "PAID") {
+          badge.textContent = "PAYMENT VERIFIED";
+          badge.style.background = "rgba(16, 185, 129, 0.15)";
+          badge.style.color = "#10b981";
+          badge.style.borderColor = "#10b981";
+        } else {
+          badge.textContent = "PAYMENT PENDING";
+          badge.style.background = "rgba(245, 158, 11, 0.15)";
+          badge.style.color = "#f59e0b";
+          badge.style.borderColor = "#f59e0b";
+        }
+
+        document.getElementById("orderMetaSummary").innerHTML = `
+          <div><strong>Destination:</strong> ${data.shippingCountry || "International Hub"}</div>
+          <div><strong>Acquisition Value:</strong> ${(data.currency === "EUR" ? "€" : "$") + Number(data.totalAmount).toFixed(2)} (${data.itemsCount} artifact${data.itemsCount > 1 ? "s" : ""})</div>
+          <div><strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}</div>
+        `;
+
+        if (data.trackingNumber) {
+          document.getElementById("carrierBox").style.display = "block";
+          document.getElementById("displayTrackingCode").textContent = data.trackingNumber;
+          document.getElementById("carrierName").textContent = `(${data.carrier || "CJPacket Sensitive Pro"})`;
+        } else {
+          document.getElementById("carrierBox").style.display = "none";
+        }
+
+        let stepsHtml = "";
+        data.timeline.forEach((step, idx) => {
+          const statusClass = step.completed ? "done" : (step.active ? "active" : "");
+          const markerContent = step.completed ? "✓" : (idx + 1);
+          stepsHtml += `
+            <div class="timeline-item">
+              <div class="step-marker ${statusClass}">${markerContent}</div>
+              <div class="step-content">
+                <h4>${step.label}</h4>
+                <p>${step.desc || ""}</p>
+              </div>
+            </div>
+          `;
+        });
+        document.getElementById("stepsContainer").innerHTML = stepsHtml;
+
+      } catch (err) {
+        document.getElementById("stepsContainer").innerHTML = `
+          <div style="color: #ef4444; font-size: 13px;">
+            Unable to connect to telemetry server. Please retry in a few moments.
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
