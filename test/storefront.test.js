@@ -135,4 +135,27 @@ describe("Kravon Headless Storefront Suite", () => {
     assert.equal(data.success, true);
     assert.equal(data.orderId, "KR-TEST-2CO-01");
   });
+
+  test("GET /api/unknown-route returns 404 JSON rather than HTML", async () => {
+    const res = await fetch(`${baseUrl}/api/unknown-route`);
+    assert.equal(res.status, 404);
+
+    const data = await res.json();
+    assert.equal(data.success, false);
+    assert.equal(data.error, "API endpoint not found");
+  });
+
+  test("GET /api/cj/orders masks sensitive customer details by default", async () => {
+    const res = await fetch(`${baseUrl}/api/cj/orders`);
+    assert.equal(res.status, 200);
+
+    const data = await res.json();
+    assert.equal(data.success, true);
+    assert.ok(Array.isArray(data.orders));
+    if (data.orders.length > 0) {
+      const first = data.orders[0];
+      assert.ok(!first.shippingAddress);
+      assert.ok(first.customerName.includes("***"));
+    }
+  });
 });

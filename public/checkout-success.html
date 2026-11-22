@@ -226,13 +226,13 @@
     const currency = params.get("currency") || "USD";
     const symbol = currency === "EUR" ? "€" : "$";
     const name = params.get("name") || "Valued Client";
-    const address = params.get("address") || "";
     const city = params.get("city") || "";
+    const country = params.get("country") || "US";
     const cjStatus = params.get("cjStatus") || "PROCESSING_IN_CHINA_WAREHOUSE";
     
     document.getElementById("displayOrderId").textContent = orderId.startsWith("#") ? orderId : "#" + orderId;
     document.getElementById("displayCustomer").textContent = name;
-    document.getElementById("displayDestination").textContent = (address ? address + ", " + city : "Direct Worldwide Delivery");
+    document.getElementById("displayDestination").textContent = (city ? city + ", " + country : "Direct Worldwide Delivery");
     document.getElementById("displayStatus").textContent = cjStatus.replace(/_/g, " ");
     document.getElementById("displayTotal").textContent = symbol + parseFloat(total).toFixed(2);
   </script>

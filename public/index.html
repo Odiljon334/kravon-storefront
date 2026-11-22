@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KRAVØN — Experimental Objects & Artifacts</title>
+  <title>KRAVØN — Cyberpunk Techwear & Anime Artifacts</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
     <div class="container nav-inner">
       <a href="/" class="brand-logo">KRAVØN</a>
 
-      <nav class="category-nav">
+      <nav id="categoryNav" class="category-nav">
         <button class="cat-btn active" data-category="All">All Items</button>
         <button class="cat-btn" data-category="Cyberpunk Gear">Cyberpunk</button>
         <button class="cat-btn" data-category="Techwear">Techwear</button>
@@ -34,9 +34,31 @@
 
   <main class="container">
     <section class="hero-quiet">
-      <h1 class="hero-title">Experimental archive.</h1>
-      <p class="hero-desc">Unclassified artifacts, rare physical objects and unpredictable editions.</p>
+      <div class="hero-badge">NEO-TOKYO ATELIER · DROP 01</div>
+      <h1 class="hero-title">Cyberpunk Techwear & Anime Artifacts.</h1>
+      <p class="hero-desc">Limited-run technical outerwear, illuminated combat faceplates, and forged katana instruments sourced direct from Tokyo and Shenzhen atelier hubs.</p>
+      <div class="hero-features">
+        <span class="feature-tag">⚡ 24h Factory Dispatch</span>
+        <span class="feature-tag">✈ End-to-End International Tracking</span>
+        <span class="feature-tag">🛡 30-Day Money-Back Guarantee</span>
+      </div>
     </section>
+
+    <div class="storefront-toolbar">
+      <div class="search-box-wrap">
+        <input type="text" id="searchInput" class="search-field" placeholder="Search catalog (e.g. Katana, Mask, Denim)...">
+        <button id="searchClearBtn" class="search-clear-btn" style="display: none;">✕</button>
+      </div>
+      <div class="sort-box-wrap">
+        <label for="sortSelect" class="sort-label">Sort:</label>
+        <select id="sortSelect" class="sort-select">
+          <option value="featured">Featured Editions</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating-desc">Highest Rated</option>
+        </select>
+      </div>
+    </div>
 
     <div id="catalogGrid" class="catalog-grid"></div>
   </main>
@@ -61,7 +83,7 @@
           <h5>Client Care</h5>
           <ul>
             <li><a href="/contact.html">Contact Us</a></li>
-            <li><a href="/contact.html">support@kravon-archive.com</a></li>
+            <li><a href="mailto:support@kravon-archive.com">support@kravon-archive.com</a></li>
             <li><span style="color: var(--text-sub); font-size: 13px;">NYC · Zurich Atelier</span></li>
           </ul>
         </div>
@@ -83,46 +105,48 @@
   <div id="drawerOverlay" class="drawer-overlay"></div>
   <aside id="cartDrawer" class="cart-drawer">
     <div class="drawer-header">
-      <h3 class="drawer-title">Bag</h3>
+      <h3 class="drawer-title">Shopping Bag</h3>
       <button id="drawerCloseBtn" class="btn-add" style="padding: 4px 10px; font-size: 11px;">Close</button>
     </div>
 
-    <div class="free-ship-box">
-      <div id="freeShipText">Complimentary shipping on orders over $200.</div>
-      <div class="ship-progress-bar">
-        <div id="freeShipFill" class="ship-progress-fill" style="width: 0%;"></div>
-      </div>
-    </div>
-
-    <div id="drawerItems" class="drawer-items"></div>
-
-    <div id="checkoutFormSection" class="checkout-form-section">
-      <div class="form-header-badge">DESTINATION · YETKAZIB BERISH MANZILI</div>
-      <div class="input-grid">
-        <input type="text" id="custName" class="form-field" placeholder="To'liq ism (Full Name)*" required>
-        <input type="email" id="custEmail" class="form-field" placeholder="Email pochta*" required>
-        <input type="text" id="custPhone" class="form-field" placeholder="Telefon raqami*" required>
-        <select id="custCountry" class="form-field">
-          <option value="US">United States (AQSH)</option>
-          <option value="GB">United Kingdom (Buyuk Britaniya)</option>
-          <option value="DE">Germany (Germaniya)</option>
-          <option value="FR">France (Fransiya)</option>
-          <option value="CH">Switzerland (Shveysariya)</option>
-          <option value="UZ">Uzbekistan (O'zbekiston)</option>
-          <option value="AE">UAE / Dubai (BAA)</option>
-        </select>
-        <input type="text" id="custAddress" class="form-field full-width" placeholder="Ko'cha va uy manzili (Street Address)*" required>
-        <input type="text" id="custCity" class="form-field" placeholder="Shahar (City)*" required>
-        <input type="text" id="custProvince" class="form-field" placeholder="Viloyat / Shtat (State/Province)*" required>
-        <input type="text" id="custZip" class="form-field" placeholder="Pochta indeksi (Postal Code)*" required>
+    <div class="drawer-scroll-body">
+      <div class="free-ship-box">
+        <div id="freeShipText">Complimentary shipping on orders over $200.</div>
+        <div class="ship-progress-bar">
+          <div id="freeShipFill" class="ship-progress-fill" style="width: 0%;"></div>
+        </div>
       </div>
 
-      <div class="form-header-badge" style="margin-top: 14px;">PAYMENT · KARTA TO'LOVI</div>
-      <div class="card-input-box">
-        <input type="text" id="cardNumber" class="form-field full-width" placeholder="Karta raqami: 4000 1234 5678 9010" maxlength="19">
-        <div class="sub-row">
-          <input type="text" id="cardExpiry" class="form-field" placeholder="MM / YY" maxlength="5">
-          <input type="text" id="cardCvc" class="form-field" placeholder="CVC" maxlength="4">
+      <div id="drawerItems" class="drawer-items"></div>
+
+      <div id="checkoutFormSection" class="checkout-form-section">
+        <div class="form-header-badge">DESTINATION · YETKAZIB BERISH MANZILI</div>
+        <div class="input-grid">
+          <input type="text" id="custName" class="form-field" placeholder="To'liq ism (Full Name)*" required>
+          <input type="email" id="custEmail" class="form-field" placeholder="Email pochta*" required>
+          <input type="tel" id="custPhone" class="form-field" placeholder="Telefon raqami*" required>
+          <select id="custCountry" class="form-field">
+            <option value="US">United States (AQSH)</option>
+            <option value="GB">United Kingdom (Buyuk Britaniya)</option>
+            <option value="DE">Germany (Germaniya)</option>
+            <option value="FR">France (Fransiya)</option>
+            <option value="CH">Switzerland (Shveysariya)</option>
+            <option value="UZ">Uzbekistan (O'zbekiston)</option>
+            <option value="AE">UAE / Dubai (BAA)</option>
+          </select>
+          <input type="text" id="custAddress" class="form-field full-width" placeholder="Ko'cha va uy manzili (Street Address)*" required>
+          <input type="text" id="custCity" class="form-field" placeholder="Shahar (City)*" required>
+          <input type="text" id="custProvince" class="form-field" placeholder="Viloyat / Shtat (State/Province)*" required>
+          <input type="text" id="custZip" class="form-field" placeholder="Pochta indeksi (Postal Code)*" required>
+        </div>
+
+        <div class="form-header-badge" style="margin-top: 14px;">PAYMENT · KARTA TO'LOVI</div>
+        <div class="card-input-box">
+          <input type="text" id="cardNumber" class="form-field full-width" placeholder="Karta raqami: 4000 1234 5678 9010" maxlength="19">
+          <div class="sub-row">
+            <input type="text" id="cardExpiry" class="form-field" placeholder="MM / YY" maxlength="5">
+            <input type="text" id="cardCvc" class="form-field" placeholder="CVC" maxlength="4">
+          </div>
         </div>
       </div>
     </div>

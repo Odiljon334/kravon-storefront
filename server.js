@@ -26,6 +26,16 @@ let cjTokenCache = {
 
 const FULFILLMENT_ORDERS = [];
 
+const COUNTRY_NAMES = {
+  US: "United States",
+  GB: "United Kingdom",
+  DE: "Germany",
+  FR: "France",
+  CH: "Switzerland",
+  UZ: "Uzbekistan",
+  AE: "United Arab Emirates"
+};
+
 let MOCK_PRODUCTS = [
   {
     id: "prod_anime_1",
@@ -310,10 +320,30 @@ app.get("/api/cj/status", async (req, res) => {
 });
 
 app.get("/api/cj/orders", (req, res) => {
+  const adminKey = req.headers["x-admin-key"] || req.query.adminKey;
+  if (adminKey === (process.env.ADMIN_KEY || "kravon_secret_admin_2026")) {
+    return res.json({
+      success: true,
+      count: FULFILLMENT_ORDERS.length,
+      orders: FULFILLMENT_ORDERS
+    });
+  }
+
+  const masked = FULFILLMENT_ORDERS.map(o => ({
+    orderId: o.orderId,
+    timestamp: o.timestamp,
+    customerName: o.customerName ? o.customerName[0] + "***" : "***",
+    shippingCountry: o.shippingCountry || "United States",
+    itemsCount: o.itemsCount,
+    totalAmount: o.totalAmount,
+    currency: o.currency,
+    status: o.status
+  }));
+
   res.json({
     success: true,
-    count: FULFILLMENT_ORDERS.length,
-    orders: FULFILLMENT_ORDERS
+    count: masked.length,
+    orders: masked
   });
 });
 
@@ -450,7 +480,7 @@ app.post("/api/checkout", async (req, res) => {
   const finalProvince = shippingProvince || "New York";
   const finalZip = shippingZip || "10005";
   const finalCountryCode = shippingCountryCode || "US";
-  const finalCountry = shippingCountry || "United States";
+  const finalCountry = COUNTRY_NAMES[finalCountryCode] || shippingCountry || "United States";
 
   const cjFulfillment = await createCJDropshippingOrder({
     orderId,
@@ -473,6 +503,7 @@ app.post("/api/checkout", async (req, res) => {
     customerName: finalName,
     shippingPhone: finalPhone,
     shippingAddress: `${finalAddress}, ${finalCity}, ${finalProvince} ${finalZip}, ${finalCountry}`,
+    shippingCountry: finalCountry,
     itemsCount: items.length,
     subtotal: parseFloat((rawSubtotal * rate).toFixed(2)),
     totalAmount: parseFloat(totalAmount.toFixed(2)),
@@ -484,7 +515,7 @@ app.post("/api/checkout", async (req, res) => {
 
   FULFILLMENT_ORDERS.unshift(orderRecord);
 
-  const checkoutUrl = `/checkout-success.html?orderId=${orderId}&total=${totalAmount.toFixed(2)}&currency=${currencySymbol}&discount=${appliedDiscount || "NONE"}&cjStatus=${encodeURIComponent(cjFulfillment.status || "CONFIRMED_IN_CHINA")}&name=${encodeURIComponent(finalName)}&address=${encodeURIComponent(finalAddress)}&city=${encodeURIComponent(finalCity)}`;
+  const checkoutUrl = `/checkout-success.html?orderId=${orderId}&total=${totalAmount.toFixed(2)}&currency=${currencySymbol}&discount=${encodeURIComponent(appliedDiscount || "NONE")}&cjStatus=${encodeURIComponent(cjFulfillment.status || "CONFIRMED_IN_CHINA")}&name=${encodeURIComponent(finalName)}&city=${encodeURIComponent(finalCity)}&country=${encodeURIComponent(finalCountryCode)}`;
 
   res.json({
     success: true,
@@ -497,6 +528,14 @@ app.post("/api/checkout", async (req, res) => {
     fulfillment: cjFulfillment,
     order: orderRecord,
     checkoutUrl
+  });
+});
+
+app.use("/api", (req, res) => {
+  res.status(404).json({
+    success: false,
+    error: "API endpoint not found",
+    path: req.originalUrl
   });
 });
 
