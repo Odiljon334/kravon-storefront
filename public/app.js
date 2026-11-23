@@ -8,7 +8,9 @@ const state = {
   sortBy: "featured",
   activeModalProduct: null,
   activeModalVariant: null,
-  appliedCoupon: null
+  appliedCoupon: null,
+  currentPage: 1,
+  pageSize: 16
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -19,6 +21,7 @@ async function initApp() {
   bindEventListeners();
   bindPolicyHandlers();
   bindConciergeAndNewsletter();
+  bindSupportDrawer();
   updateCartDisplay();
   await fetchSystemStatus();
   await loadCatalog();
@@ -39,6 +42,7 @@ function bindEventListeners() {
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
       state.searchQuery = e.target.value.trim().toLowerCase();
+      state.currentPage = 1;
       if (clearBtn) {
         clearBtn.style.display = state.searchQuery ? "block" : "none";
       }
@@ -50,6 +54,7 @@ function bindEventListeners() {
     clearBtn.addEventListener("click", () => {
       searchInput.value = "";
       state.searchQuery = "";
+      state.currentPage = 1;
       clearBtn.style.display = "none";
       renderCatalog();
       searchInput.focus();
@@ -88,6 +93,12 @@ function bindEventListeners() {
     checkoutBtn.addEventListener("click", () => handleCheckoutExecution());
   }
 
+  const custCountrySelect = document.getElementById("custCountry");
+  if (custCountrySelect) {
+    custCountrySelect.addEventListener("change", () => updateShippingEstimate());
+  }
+  updateShippingEstimate();
+
   const modalBackdrop = document.getElementById("modalBackdrop");
   const modalCloseBtn = document.getElementById("modalCloseBtn");
   if (modalCloseBtn) {
@@ -123,7 +134,8 @@ function formatPrice(usdAmount) {
   const rate = state.rates[state.currency] || 1.0;
   const converted = usdAmount * rate;
   const symbol = state.currency === "EUR" ? "€" : "$";
-  return `${symbol}${converted.toFixed(2)}`;
+  const uzs = Math.round(usdAmount * 12850).toLocaleString();
+  return `${symbol}${converted.toFixed(2)} <span class="uzs-tag">≈ ${uzs} UZS</span>`;
 }
 
 async function fetchSystemStatus() {
@@ -163,6 +175,7 @@ function renderCategoryNav() {
   navContainer.querySelectorAll(".cat-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       state.selectedCategory = btn.getAttribute("data-category");
+      state.currentPage = 1;
       navContainer.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       renderCatalog();
@@ -206,10 +219,17 @@ function renderCatalog() {
       <h3 class="empty-state-title">No items found</h3>
       <p class="empty-state-sub">Try searching with another keyword or select a different category.</p>
     </div>`;
+    renderPaginationControls(0);
     return;
   }
 
-  container.innerHTML = filtered.map(product => {
+  const totalItems = filtered.length;
+  const totalPages = Math.ceil(totalItems / state.pageSize) || 1;
+  if (state.currentPage > totalPages) state.currentPage = 1;
+  const start = (state.currentPage - 1) * state.pageSize;
+  const paginated = filtered.slice(start, start + state.pageSize);
+
+  container.innerHTML = paginated.map(product => {
     const primaryVariant = product.variants[0];
     const initialImg = product.images[0];
 
@@ -220,8 +240,9 @@ function renderCatalog() {
         </div>
         <div class="card-body">
           <div class="card-meta-row">
-            <span class="rating-badge">★ ${product.rating || "4.9"} Atelier Score</span>
-            <span class="stock-badge">${product.stockCount || 15} IN STOCK</span>
+            <span class="rating-badge">★ ${(product.rating || 4.9).toFixed(1)} (${product.listedNum || product.reviewsCount || 100})</span>
+            <span class="qc-badge">🛡️ QC Passed · CE</span>
+            <span class="stock-badge">${(product.stockCount || 100).toLocaleString()} IN FACTORY</span>
           </div>
           <h3 class="card-title" onclick="openQuickView('${product.id}')">${product.title}</h3>
 
@@ -248,7 +269,41 @@ function renderCatalog() {
       </article>
     `;
   }).join("");
+
+  renderPaginationControls(totalPages);
 }
+
+function renderPaginationControls(totalPages) {
+  const wrap = document.getElementById("paginationWrap");
+  if (!wrap) return;
+  if (totalPages <= 1) {
+    wrap.innerHTML = "";
+    return;
+  }
+
+  let buttons = "";
+  if (state.currentPage > 1) {
+    buttons += `<button class="page-nav-btn" onclick="changePage(${state.currentPage - 1})">← Prev</button>`;
+  }
+  for (let i = 1; i <= totalPages; i++) {
+    const active = i === state.currentPage ? "active" : "";
+    buttons += `<button class="page-num-btn ${active}" onclick="changePage(${i})">${i}</button>`;
+  }
+  if (state.currentPage < totalPages) {
+    buttons += `<button class="page-nav-btn" onclick="changePage(${state.currentPage + 1})">Next →</button>`;
+  }
+  wrap.innerHTML = `<div class="pagination-inner">${buttons}</div>`;
+}
+
+function changePage(page) {
+  state.currentPage = page;
+  renderCatalog();
+  const target = document.getElementById("catalogGrid");
+  if (target) {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+window.changePage = changePage;
 
 function switchCardVariant(productId, variantId, imageIndex, element) {
   const card = document.getElementById(`card_${productId}`);
@@ -267,7 +322,7 @@ function switchCardVariant(productId, variantId, imageIndex, element) {
 
   const priceEl = document.getElementById(`price_${productId}`);
   if (priceEl) {
-    priceEl.textContent = formatPrice(variant.price);
+    priceEl.innerHTML = formatPrice(variant.price);
   }
 
   const addBtn = document.getElementById(`addBtn_${productId}`);
@@ -307,12 +362,38 @@ function openQuickView(productId) {
         <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-gold); margin-bottom: 6px;">
           ITEM CODE: ${product.sku}
         </div>
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+          <span class="rating-badge" style="font-size: 12px;">★ ${(product.rating || 4.9).toFixed(1)} Atelier Score (${product.listedNum || product.reviewsCount || 100} Global Orders)</span>
+          <span class="stock-badge" id="modalStockBadge" style="font-size: 11px; font-weight: 700;">${(primaryVariant.stockCount || product.stockCount || 100).toLocaleString()} UNITS IN FACTORY WAREHOUSE</span>
+        </div>
         <h2 style="font-size: 22px; font-weight: 800; line-height: 1.25; margin-bottom: 8px;">${product.title}</h2>
         <div style="font-size: 20px; font-weight: 700; font-family: var(--font-mono); color: var(--text-main); margin-bottom: 14px;" id="modalPrice">
           ${formatPrice(primaryVariant.price)}
         </div>
 
         <p style="font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-bottom: 18px;">${product.description}</p>
+
+        ${(product.category === "Apparel" || product.category === "Techwear" || product.category === "Winter Streetwear & Thermal Defense") ? `
+          <div style="margin-bottom: 14px;">
+            <button type="button" class="btn-size-guide" onclick="toggleSizeGuide()" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-sub); font-family: var(--font-mono); font-size: 11px; padding: 4px 10px; border-radius: 4px; cursor: pointer;">
+              📐 Sizing Specifications (CM / IN)
+            </button>
+            <div id="sizeGuideBox" style="display: none; margin-top: 8px; padding: 10px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 6px; font-size: 11px; font-family: var(--font-mono);">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; text-align: center; color: var(--text-sub); border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
+                <span>Size</span><span>Chest/Waist</span><span>Length</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; text-align: center; padding: 4px 0; color: var(--text-main);">
+                <span>XS / S</span><span>36-38 in (94cm)</span><span>27 in (69cm)</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; text-align: center; padding: 4px 0; color: var(--text-main);">
+                <span>M / L</span><span>40-42 in (104cm)</span><span>29 in (74cm)</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; text-align: center; padding: 4px 0; color: var(--text-main);">
+                <span>XL</span><span>44-46 in (114cm)</span><span>31 in (79cm)</span>
+              </div>
+            </div>
+          </div>
+        ` : ""}
 
         <div style="margin-bottom: 18px;">
           <label style="display: block; font-size: 11px; font-family: var(--font-mono); color: var(--text-sub); margin-bottom: 8px;">
@@ -353,6 +434,15 @@ function openQuickView(productId) {
         <button class="btn-checkout-now" style="width: 100%;" onclick="commitModalToCart()">
           Add to Shopping Bag
         </button>
+        <div class="modal-trust-tags">
+          <span>🛡️ 30-Day Money-Back</span>
+          <span>✈️ 7-12d Air Express</span>
+          <span>🏛️ DDP Zero Customs</span>
+          <span>🔍 100% QC Passed</span>
+        </div>
+        <a href="https://t.me/nova_archive_support" target="_blank" rel="noopener noreferrer" class="btn-tg-direct">
+          💬 Telegram Orqali 1-Click Buyurtma Berish
+        </a>
       </div>
     </div>
   `;
@@ -383,7 +473,13 @@ function chooseModalVariant(variantId, imageIndex, element) {
 
   const priceEl = document.getElementById("modalPrice");
   if (priceEl) {
-    priceEl.textContent = formatPrice(variant.price);
+    priceEl.innerHTML = formatPrice(variant.price);
+  }
+
+  const stockEl = document.getElementById("modalStockBadge");
+  if (stockEl) {
+    const liveCount = variant.stockCount || state.activeModalProduct.stockCount || 100;
+    stockEl.textContent = `${liveCount.toLocaleString()} UNITS IN FACTORY WAREHOUSE`;
   }
 
   if (state.activeModalProduct.images && state.activeModalProduct.images[imageIndex]) {
@@ -413,6 +509,13 @@ function closeModal() {
   if (backdrop) backdrop.classList.remove("active");
   state.activeModalProduct = null;
   state.activeModalVariant = null;
+}
+
+function toggleSizeGuide() {
+  const box = document.getElementById("sizeGuideBox");
+  if (box) {
+    box.style.display = box.style.display === "none" ? "block" : "none";
+  }
 }
 
 function pushItemToCart(productId, variantId) {
@@ -545,7 +648,7 @@ function updateCartDisplay() {
 
 function updateLedger(rawSubtotal) {
   let discountAmount = 0;
-  if (state.appliedCoupon === "VIP10") {
+  if (state.appliedCoupon === "VIP10" || state.appliedCoupon === "WELCOME10") {
     discountAmount = rawSubtotal * 0.10;
   }
 
@@ -555,9 +658,9 @@ function updateLedger(rawSubtotal) {
   const disEl = document.getElementById("ledgerDiscount");
   const totEl = document.getElementById("ledgerTotal");
 
-  if (subEl) subEl.textContent = formatPrice(rawSubtotal);
-  if (disEl) disEl.textContent = state.appliedCoupon ? `-${formatPrice(discountAmount)} (${state.appliedCoupon})` : "$0.00";
-  if (totEl) totEl.textContent = formatPrice(finalTotal);
+  if (subEl) subEl.innerHTML = formatPrice(rawSubtotal);
+  if (disEl) disEl.innerHTML = state.appliedCoupon ? `-${formatPrice(discountAmount)} (${state.appliedCoupon})` : "$0.00";
+  if (totEl) totEl.innerHTML = formatPrice(finalTotal);
 
   const thresholdUsd = 200.0;
   const progressRatio = Math.min(1.0, rawSubtotal / thresholdUsd);
@@ -575,16 +678,42 @@ function updateLedger(rawSubtotal) {
   }
 }
 
+const SHIPPING_ESTIMATES = {
+  US: { time: "5–9 Business Days", carrier: "via CJPacket Sensitive Air Express", guarantee: "Customs Duty Free (DDP)" },
+  GB: { time: "5–8 Business Days", carrier: "via Royal Mail Tracked Priority", guarantee: "VAT Included, No Import Fees" },
+  DE: { time: "6–10 Business Days", carrier: "via DHL Express Germany Direct", guarantee: "EU VAT Cleared (IOSS)" },
+  FR: { time: "6–10 Business Days", carrier: "via La Poste Colissimo Express", guarantee: "EU VAT Cleared (IOSS)" },
+  CH: { time: "5–9 Business Days", carrier: "via Swiss Post Direct Freight", guarantee: "100% Insured Priority" },
+  JP: { time: "4–7 Business Days", carrier: "via Japan Post / Sagawa Express", guarantee: "Tokyo Air Priority Direct" },
+  UZ: { time: "7–14 Business Days", carrier: "via UzPost Priority Air Freight", guarantee: "Tashkent Hub Insured" },
+  AE: { time: "5–9 Business Days", carrier: "via Emirates Post / Aramex Express", guarantee: "Dubai Hub Customs Cleared" },
+  CA: { time: "6–11 Business Days", carrier: "via Canada Post Expedited Freight", guarantee: "Duties Pre-Paid" },
+  AU: { time: "6–10 Business Days", carrier: "via Australia Post Express Air", guarantee: "GST Included" }
+};
+
+function updateShippingEstimate() {
+  const select = document.getElementById("custCountry");
+  if (!select) return;
+  const countryCode = select.value || "US";
+  const est = SHIPPING_ESTIMATES[countryCode] || SHIPPING_ESTIMATES.US;
+  const timeEl = document.getElementById("estTime");
+  const carrierEl = document.getElementById("estCarrier");
+  const guarEl = document.getElementById("estGuarantee");
+  if (timeEl) timeEl.textContent = est.time;
+  if (carrierEl) carrierEl.textContent = est.carrier;
+  if (guarEl) guarEl.textContent = est.guarantee;
+}
+
 function handleApplyCoupon() {
   const input = document.getElementById("couponInput");
   if (!input) return;
 
   const code = input.value.trim().toUpperCase();
-  if (code === "VIP10") {
-    state.appliedCoupon = "VIP10";
+  if (code === "VIP10" || code === "WELCOME10") {
+    state.appliedCoupon = code;
     input.disabled = true;
     updateCartDisplay();
-    showToast("VIP10 Applied: 10% Discount Activated");
+    showToast(`${code} Applied: 10% Discount Activated`);
   } else {
     showToast("Invalid promotional code");
   }
@@ -830,4 +959,30 @@ function showToast(msg) {
   setTimeout(() => {
     toast.style.display = "none";
   }, 2600);
+}
+
+function bindSupportDrawer() {
+  const fab = document.getElementById("supportFabBtn");
+  const drawerBackdrop = document.getElementById("supportDrawerBackdrop");
+  const closeBtn = document.getElementById("supportDrawerCloseBtn");
+
+  if (fab && drawerBackdrop) {
+    fab.addEventListener("click", () => {
+      drawerBackdrop.classList.add("active");
+    });
+  }
+
+  if (closeBtn && drawerBackdrop) {
+    closeBtn.addEventListener("click", () => {
+      drawerBackdrop.classList.remove("active");
+    });
+  }
+
+  if (drawerBackdrop) {
+    drawerBackdrop.addEventListener("click", (e) => {
+      if (e.target === drawerBackdrop) {
+        drawerBackdrop.classList.remove("active");
+      }
+    });
+  }
 }

@@ -30,10 +30,10 @@ describe("Kravon Production Storefront & Security Suite", () => {
 
     const data = await res.json();
     assert.equal(data.status, "online");
-    assert.equal(data.brand, "KRAVØN");
+    assert.equal(data.brand, "NOVA ARCHIVE");
     assert.deepEqual(data.currencies, ["USD", "EUR"]);
     assert.ok(data.rates.EUR);
-    assert.equal(data.catalogCount, 4);
+    assert.equal(data.catalogCount, 96);
   });
 
   test("Security headers are enforced across all responses", async () => {
@@ -70,7 +70,7 @@ describe("Kravon Production Storefront & Security Suite", () => {
 
     const data = await res.json();
     assert.equal(data.success, true);
-    assert.equal(data.products.length, 4);
+    assert.equal(data.products.length, 96);
 
     const sample = data.products[0];
     assert.ok(sample.sku);
@@ -81,14 +81,14 @@ describe("Kravon Production Storefront & Security Suite", () => {
     assert.ok(sample.variants.length > 0);
   });
 
-  test("GET /api/products?category=Apparel filters accurately", async () => {
-    const res = await fetch(`${baseUrl}/api/products?category=Apparel`);
+  test("GET /api/products?category=Smart Tech & Viral Gadgets filters accurately", async () => {
+    const res = await fetch(`${baseUrl}/api/products?category=${encodeURIComponent("Smart Tech & Viral Gadgets")}`);
     assert.equal(res.status, 200);
 
     const data = await res.json();
     assert.equal(data.success, true);
-    assert.equal(data.products.length, 1);
-    assert.equal(data.products[0].id, "prod_anime_3");
+    assert.equal(data.products.length, 16);
+    assert.equal(data.products[0].category, "Smart Tech & Viral Gadgets");
   });
 
   test("GET /api/products?search=Cyberpunk returns matching items", async () => {
@@ -147,6 +147,34 @@ describe("Kravon Production Storefront & Security Suite", () => {
     assert.equal(persisted.paymentStatus, "PENDING_PAYMENT");
     assert.equal(persisted.status, "UNFULFILLED");
     assert.equal(persisted.items.length, 1);
+  });
+
+  test("POST /api/checkout accepts WELCOME10 launch discount code", async () => {
+    const res = await fetch(`${baseUrl}/api/checkout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: [
+          { id: "prod_anime_1", variantId: "var_mask_cyan", quantity: 1 }
+        ],
+        customerName: "Bobur Mirzayev",
+        customerEmail: "bobur@gmail.com",
+        shippingPhone: "+998901234567",
+        shippingAddress: "Amir Temur 45",
+        shippingCity: "Tashkent",
+        shippingProvince: "Tashkent",
+        shippingZip: "100000",
+        shippingCountryCode: "UZ",
+        discountCode: "WELCOME10"
+      })
+    });
+
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    assert.equal(data.success, true);
+    assert.equal(data.subtotal, 118.00);
+    assert.equal(data.totalAmount, 106.20);
+    assert.equal(data.appliedDiscount, "10% WELCOME LAUNCH");
   });
 
   test("POST /api/checkout rejects invalid and negative quantities", async () => {
