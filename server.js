@@ -984,5 +984,10 @@ export { app };
 if (process.env.NODE_ENV !== "test" && process.argv[1] === __filename) {
   app.listen(PORT, () => {
     process.stdout.write(`KRAVON_SYSTEM_ONLINE_PORT_${PORT}\n`);
+    const externalUrl = process.env.RENDER_EXTERNAL_URL || "https://kravon-storefront.onrender.com";
+    const pingTimer = setInterval(() => {
+      fetch(`${externalUrl}/api/status`).catch(() => {});
+    }, 600000);
+    if (pingTimer.unref) pingTimer.unref();
   });
 }
