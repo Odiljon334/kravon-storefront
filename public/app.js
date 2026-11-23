@@ -134,8 +134,7 @@ function formatPrice(usdAmount) {
   const rate = state.rates[state.currency] || 1.0;
   const converted = usdAmount * rate;
   const symbol = state.currency === "EUR" ? "€" : "$";
-  const uzs = Math.round(usdAmount * 12850).toLocaleString();
-  return `${symbol}${converted.toFixed(2)} <span class="uzs-tag">≈ ${uzs} UZS</span>`;
+  return `${symbol}${converted.toFixed(2)}`;
 }
 
 async function fetchSystemStatus() {
@@ -241,7 +240,7 @@ function renderCatalog() {
         <div class="card-body">
           <div class="card-meta-row">
             <span class="rating-badge">★ ${(product.rating || 4.9).toFixed(1)} (${product.listedNum || product.reviewsCount || 100})</span>
-            <span class="stock-badge">${(product.stockCount || 100).toLocaleString()} IN FACTORY</span>
+            <span class="stock-badge">${(product.stockCount || 100).toLocaleString()} OMBORDA</span>
           </div>
           <h3 class="card-title" onclick="openQuickView('${product.id}')">${product.title}</h3>
 
@@ -363,7 +362,7 @@ function openQuickView(productId) {
         </div>
         <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
           <span class="rating-badge" style="font-size: 12px;">★ ${(product.rating || 4.9).toFixed(1)} Atelier Score (${product.listedNum || product.reviewsCount || 100} Global Orders)</span>
-          <span class="stock-badge" id="modalStockBadge" style="font-size: 11px; font-weight: 700;">${(primaryVariant.stockCount || product.stockCount || 100).toLocaleString()} UNITS IN FACTORY WAREHOUSE</span>
+          <span class="stock-badge" id="modalStockBadge" style="font-size: 11px; font-weight: 700;">${(primaryVariant.stockCount || product.stockCount || 100).toLocaleString()} TA OMBORDA MAVJUD</span>
         </div>
         <h2 style="font-size: 22px; font-weight: 800; line-height: 1.25; margin-bottom: 8px;">${product.title}</h2>
         <div style="font-size: 20px; font-weight: 700; font-family: var(--font-mono); color: var(--text-main); margin-bottom: 14px;" id="modalPrice">
@@ -478,7 +477,7 @@ function chooseModalVariant(variantId, imageIndex, element) {
   const stockEl = document.getElementById("modalStockBadge");
   if (stockEl) {
     const liveCount = variant.stockCount || state.activeModalProduct.stockCount || 100;
-    stockEl.textContent = `${liveCount.toLocaleString()} UNITS IN FACTORY WAREHOUSE`;
+    stockEl.textContent = `${liveCount.toLocaleString()} TA OMBORDA MAVJUD`;
   }
 
   if (state.activeModalProduct.images && state.activeModalProduct.images[imageIndex]) {
