@@ -241,7 +241,6 @@ function renderCatalog() {
         <div class="card-body">
           <div class="card-meta-row">
             <span class="rating-badge">★ ${(product.rating || 4.9).toFixed(1)} (${product.listedNum || product.reviewsCount || 100})</span>
-            <span class="qc-badge">🛡️ QC Passed · CE</span>
             <span class="stock-badge">${(product.stockCount || 100).toLocaleString()} IN FACTORY</span>
           </div>
           <h3 class="card-title" onclick="openQuickView('${product.id}')">${product.title}</h3>
